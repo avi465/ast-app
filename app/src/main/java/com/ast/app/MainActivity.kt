@@ -10,11 +10,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.ast.app.ui.theme.AdvancedStudyTutorialsTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        this will install splash screen
+//        installSplashScreen()
         setContent {
             AdvancedStudyTutorialsTheme {
                 // A surface container using the 'background' color from the theme
