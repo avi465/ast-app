@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Advanced Study Tutorials</string>
+    <string name="start">AST(beta)</string>
+    <string name="phone_login">Enter phone number</string>
+    <string name="forgot_password">Forgot your password?</string>
+    <string name="signup">Create an account</string>
+    <string name="back_button">Navigate back</string>
+    <string name="email_login">Log in with email</string>
+    <string name="phone_login_description">Please enter your phone number we\'ll send OTP to verify.</string>
+    <string name="forgot_password_description">Don\'t worry,it happen to the best of us! Just enter your email address,and we\'ll send you an email with a link so you can reset your password.</string>
+    <string name="verify_otp">Verify One Time Password</string>
 </resources>
