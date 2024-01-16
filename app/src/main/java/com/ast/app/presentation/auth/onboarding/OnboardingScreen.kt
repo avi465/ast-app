@@ -30,11 +30,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ast.app.R
 import com.ast.app.presentation.auth.EmailLoginScreen
+import com.ast.app.presentation.auth.PasswordResetScreen
 import com.ast.app.presentation.auth.PhoneLoginScreen
 import com.ast.app.presentation.auth.SignupScreen
 import com.ast.app.presentation.auth.SplashScreen
 import com.ast.app.presentation.auth.VerifyOtpScreen
-import kotlinx.coroutines.launch
+import com.ast.app.presentation.auth.VerifyPasswordResetScreen
 
 enum class OnboardingScreen(
     @StringRes val title: Int
@@ -44,7 +45,8 @@ enum class OnboardingScreen(
     VerifyOtp(R.string.verify_otp),
     EmailLogin(R.string.email_login),
     Signup(R.string.signup),
-    PasswordReset(R.string.forgot_password)
+    PasswordReset(R.string.forgot_password),
+    VerifyPasswordReset(R.string.verify_password_reset)
 }
 
 @Composable
@@ -138,7 +140,9 @@ fun Onboard() {
             }
 
             composable(route = OnboardingScreen.EmailLogin.name) {
-                EmailLoginScreen()
+                EmailLoginScreen(onForgotPasswordButtonClicked = {
+                    navController.navigate(OnboardingScreen.PasswordReset.name)
+                })
             }
 
             composable(route = OnboardingScreen.Signup.name) {
@@ -154,6 +158,16 @@ fun Onboard() {
 //                        )
 //                    }
                 })
+            }
+
+            composable(route = OnboardingScreen.PasswordReset.name) {
+                PasswordResetScreen(onPasswordResetSendButtonClicked = {
+                    navController.navigate(OnboardingScreen.VerifyPasswordReset.name)
+                })
+            }
+
+            composable(route = OnboardingScreen.VerifyPasswordReset.name) {
+                VerifyPasswordResetScreen()
             }
         }
     }

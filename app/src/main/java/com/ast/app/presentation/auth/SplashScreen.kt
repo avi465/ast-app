@@ -1,6 +1,7 @@
 package com.ast.app.presentation.auth
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +18,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
@@ -40,7 +40,8 @@ fun SplashScreen(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -76,7 +77,7 @@ fun SplashScreen(
                     .height(dimensionResource(id = R.dimen.button_height))
             ) {
                 val loginText = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.Black)) {
+                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
                         append("Already have an account? ")
                     }
                     withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {

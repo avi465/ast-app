@@ -1,6 +1,5 @@
 package com.ast.app.presentation.auth
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +26,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
@@ -36,18 +34,11 @@ import androidx.compose.ui.unit.dp
 import com.ast.app.R
 
 @Composable
-fun VerifyOtpScreen(
-    onResendOtpTextClicked: (Int) -> Unit
-) {
+fun VerifyPasswordResetScreen(){
     var otp by rememberSaveable {
         mutableStateOf("")
     }
-    val sec = 59
     val otpSize = 6
-    val pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-    val resendOtpText = buildAnnotatedString {
-        append("Resend OTP in 00:$sec")
-    }
 
     Column(
         modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_l)),
@@ -74,26 +65,6 @@ fun VerifyOtpScreen(
             },
             modifier = Modifier.fillMaxWidth()
         )
-
-        ClickableText(
-            text = resendOtpText,
-            style = MaterialTheme.typography.labelLarge,
-            onClick = onResendOtpTextClicked,
-            modifier = Modifier
-                .align(Alignment.Start)
-                .drawBehind {
-                    val strokeWidthPx = 1.dp.toPx()
-                    val verticalOffset = size.height
-                    drawLine(
-                        color = Color.Gray,
-                        strokeWidth = strokeWidthPx,
-                        start = Offset(0f, verticalOffset),
-                        end = Offset(size.width, verticalOffset),
-                        pathEffect = pathEffect
-                    )
-                },
-        )
-
 
         Spacer(modifier = Modifier.weight(1f))
 

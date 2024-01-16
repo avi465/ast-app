@@ -102,8 +102,8 @@ fun PhoneLoginScreen(
         OutlinedButton(
             onClick = onLoginWithEmailButtonClicked,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = Color.DarkGray
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onBackground
             ),
             modifier = Modifier
                 .fillMaxWidth()

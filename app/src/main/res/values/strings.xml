@@ -8,5 +8,6 @@
     <string name="email_login">Log in with email</string>
     <string name="phone_login_description">Please enter your phone number we\'ll send OTP to verify.</string>
     <string name="forgot_password_description">Don\'t worry,it happen to the best of us! Just enter your email address,and we\'ll send you an email with a link so you can reset your password.</string>
-    <string name="verify_otp">Verify One Time Password</string>
+    <string name="verify_otp">Verify OTP</string>
+    <string name="verify_password_reset">Verify password reset code</string>
 </resources>
