@@ -38,12 +38,12 @@ fun SplashScreen(
             .fillMaxSize(),
         contentAlignment = Alignment.TopCenter
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.background),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Image(
                 imageVector = ImageVector.vectorResource(R.drawable.auth_splash),
