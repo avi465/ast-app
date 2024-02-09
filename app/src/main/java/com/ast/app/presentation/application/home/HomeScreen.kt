@@ -1,12 +1,18 @@
 package com.ast.app.presentation.application.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import com.ast.app.R
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
@@ -15,6 +21,13 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         modifier = modifier.fillMaxSize()
     ) {
+        Carousel()
+    }
+}
+
+@Composable
+fun Carousel() {
+    Row {
         Text(text = "Home Screen")
     }
 }

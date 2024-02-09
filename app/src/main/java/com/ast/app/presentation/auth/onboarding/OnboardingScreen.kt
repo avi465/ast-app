@@ -24,18 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ast.app.R
-import com.ast.app.presentation.auth.EmailLoginScreen
-import com.ast.app.presentation.auth.PasswordResetScreen
-import com.ast.app.presentation.auth.PhoneLoginScreen
-import com.ast.app.presentation.auth.SignupScreen
-import com.ast.app.presentation.auth.SplashScreen
-import com.ast.app.presentation.auth.VerifyOtpScreen
-import com.ast.app.presentation.auth.VerifyPasswordResetScreen
 
 enum class OnboardingScreen(
     @StringRes val title: Int
@@ -82,93 +74,40 @@ fun AstAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Onboard() {
-    //create NavController
-    val navController = rememberNavController()
-    //Get current back stack entry
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    //Get the name of current screen
-    val currentScreen = OnboardingScreen.valueOf(
-        backStackEntry?.destination?.route ?: OnboardingScreen.Start.name
-    )
-
-    /**
-     * scrollBehavior is used to get the instance of different
-     * scroll behaviors
-     */
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-
-    val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
-
-    Scaffold(
-        //for showing snackbar
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            AstAppBar(
-                currentScreenTitle = currentScreen.title,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() },
-//                scrollBehavior = scrollBehavior
-            )
-        }) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = OnboardingScreen.Start.name,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(route = OnboardingScreen.Start.name) {
-                SplashScreen(onLoginButtonClicked = {
-                    navController.navigate(OnboardingScreen.PhoneLogin.name)
-                }, onGetStartedButtonClicked = {
-                    navController.navigate(OnboardingScreen.Signup.name)
-                })
-            }
-            composable(route = OnboardingScreen.PhoneLogin.name) {
-                PhoneLoginScreen(
-                    onSendOtpButtonClicked = {
-                        navController.navigate(OnboardingScreen.VerifyOtp.name)
-                    }, onLoginWithEmailButtonClicked = {
-                        navController.navigate(OnboardingScreen.EmailLogin.name)
-                    })
-            }
-
-            composable(route = OnboardingScreen.EmailLogin.name) {
-                EmailLoginScreen(onForgotPasswordButtonClicked = {
-                    navController.navigate(OnboardingScreen.PasswordReset.name)
-                })
-            }
-
-            composable(route = OnboardingScreen.Signup.name) {
-                SignupScreen()
-            }
-
-            composable(route = OnboardingScreen.VerifyOtp.name) {
-                VerifyOtpScreen(onResendOtpTextClicked = {
-                    // for showing snackbar in onClick for example
-//                    coroutineScope.launch {
-//                        snackbarHostState.showSnackbar(
-//                            "OTP Sent", "Ok"
-//                        )
-//                    }
-                })
-            }
-
-            composable(route = OnboardingScreen.PasswordReset.name) {
-                PasswordResetScreen(onPasswordResetSendButtonClicked = {
-                    navController.navigate(OnboardingScreen.VerifyPasswordReset.name)
-                })
-            }
-
-            composable(route = OnboardingScreen.VerifyPasswordReset.name) {
-                VerifyPasswordResetScreen()
-            }
-        }
-    }
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun Onboard(navController: NavHostController) {
+//    //Get current back stack entry
+//    val backStackEntry by navController.currentBackStackEntryAsState()
+//    //Get the name of current screen
+//    val currentScreen = OnboardingScreen.valueOf(
+//        backStackEntry?.destination?.route ?: OnboardingScreen.Start.name
+//    )
+//
+//    /**
+//     * scrollBehavior is used to get the instance of different
+//     * scroll behaviors
+//     */
+//    val scrollBehavior =
+//        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+//
+//    val snackbarHostState = remember { SnackbarHostState() }
+//    val coroutineScope = rememberCoroutineScope()
+//
+//    Scaffold(
+//        //for showing snackbar
+//        snackbarHost = { SnackbarHost(snackbarHostState) },
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .nestedScroll(scrollBehavior.nestedScrollConnection),
+//        topBar = {
+//            AstAppBar(
+//                currentScreenTitle = currentScreen.title,
+//                canNavigateBack = navController.previousBackStackEntry != null,
+//                navigateUp = { navController.navigateUp() },
+////                scrollBehavior = scrollBehavior
+//            )
+//        }) { innerPadding ->
+//        AuthNavGraph(navController = navController, modifier = Modifier.padding(innerPadding))
+//    }
+//}

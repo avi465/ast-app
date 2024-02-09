@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -24,16 +25,29 @@ import com.ast.app.R
 @Composable
 fun PrivacyPolicy() {
     val privacyAndPolicyText = buildAnnotatedString {
-        append("By signing up you agree to our ")
+        withStyle(
+            style = SpanStyle(
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
+        ) {
+            append("By signing up you agree to our ")
+        }
+
         withStyle(
             style = SpanStyle(
                 textDecoration = TextDecoration.Underline,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
         ) {
             append("Privacy Policy")
         }
-        append(" and ")
+        withStyle(
+            style = SpanStyle(
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
+        ) {
+            append(" and ")
+        }
         withStyle(
             style = SpanStyle(
                 textDecoration = TextDecoration.Underline,
