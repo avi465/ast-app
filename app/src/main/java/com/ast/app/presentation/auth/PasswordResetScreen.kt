@@ -30,7 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ast.app.R
-import com.ast.app.presentation.auth.onboarding.OnboardingScreen
+import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
 
 @Composable
@@ -46,7 +46,7 @@ fun PasswordResetScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             OnBoardTopAppBar(
-                currentScreenTitle = OnboardingScreen.PasswordReset.title,
+                currentScreenTitle = AuthScreen.PasswordReset.title,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
             )

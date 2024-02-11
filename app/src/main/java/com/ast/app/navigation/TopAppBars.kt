@@ -32,7 +32,7 @@ fun OnBoardTopAppBar(
         title = {
             Text(
                 text = stringResource(currentScreenTitle),
-//                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Medium),
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Medium),
             )
         },
         modifier = modifier,
@@ -61,7 +61,7 @@ fun AstAppTopAppBar(
 ) {
     TopAppBar(
         title = {
-            Text(text = "Home")
+//            Text(text = "Home")
         },
         modifier = modifier,
         navigationIcon = {

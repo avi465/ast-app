@@ -10,4 +10,5 @@
     <string name="forgot_password_description">Don\'t worry,it happen to the best of us! Just enter your email address,and we\'ll send you an email with a link so you can reset your password.</string>
     <string name="verify_otp">Verify OTP</string>
     <string name="verify_password_reset">Verify password reset code</string>
+    <string name="image_slider">image slider</string>
 </resources>

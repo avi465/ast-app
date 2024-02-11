@@ -33,7 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ast.app.R
-import com.ast.app.presentation.auth.onboarding.OnboardingScreen
+import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
 import com.ast.app.presentation.common.PrivacyPolicy
 
@@ -53,7 +53,7 @@ fun EmailLoginScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             OnBoardTopAppBar(
-                currentScreenTitle = OnboardingScreen.EmailLogin.title,
+                currentScreenTitle = AuthScreen.EmailLogin.title,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
             )

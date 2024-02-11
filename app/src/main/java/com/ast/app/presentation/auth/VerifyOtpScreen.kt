@@ -38,7 +38,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ast.app.R
-import com.ast.app.presentation.auth.onboarding.OnboardingScreen
+import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
 
 @Composable
@@ -66,7 +66,7 @@ fun VerifyOtpScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             OnBoardTopAppBar(
-                currentScreenTitle = OnboardingScreen.VerifyOtp.title,
+                currentScreenTitle = AuthScreen.VerifyOtp.title,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
             )

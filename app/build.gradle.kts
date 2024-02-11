@@ -71,9 +71,13 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     //Material Icons Extended
-    implementation("androidx.compose.material:material-icons-extended-android:1.5.4")
+    implementation("androidx.compose.material:material-icons-extended-android:1.6.1")
 
     //Jetpack Compose Navigation
-    implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    //For pager
+    implementation ("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0")
 
 }

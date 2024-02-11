@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ast.app.R
-import com.ast.app.presentation.auth.onboarding.OnboardingScreen
+import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
 import com.ast.app.presentation.common.PrivacyPolicy
 
@@ -43,7 +43,7 @@ fun SplashScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             OnBoardTopAppBar(
-                currentScreenTitle = OnboardingScreen.Start.title,
+                currentScreenTitle = AuthScreen.Start.title,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
             )
