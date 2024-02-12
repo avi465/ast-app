@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.ast.app.R
 import com.ast.app.presentation.auth.EmailLoginScreen
+import com.ast.app.presentation.auth.EmailLoginViewModel
 import com.ast.app.presentation.auth.PasswordResetScreen
 import com.ast.app.presentation.auth.PhoneLoginScreen
 import com.ast.app.presentation.auth.SignupScreen

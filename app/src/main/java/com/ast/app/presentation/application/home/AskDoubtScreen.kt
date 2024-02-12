@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import com.ast.app.navigation.AstAppTopAppBar
 import com.ast.app.navigation.AstBottomNavBar
 import com.ast.app.navigation.TopLevelDestination
+import com.ast.app.presentation.common.EmptyScreen
 
 @Composable
 fun AskDoubtScreen(
@@ -25,6 +26,6 @@ fun AskDoubtScreen(
         verticalArrangement = Arrangement.Center,
         modifier = modifier.fillMaxSize()
     ) {
-        Text(text = "Ask Doubt Screen")
+        EmptyScreen()
     }
 }

@@ -164,9 +164,6 @@ fun PhoneLoginScreen(
                 ) {
                     Text(text = "Send OTP", style = MaterialTheme.typography.titleMedium)
                 }
-
-                //PrivacyPolicy component
-                PrivacyPolicy()
             }
         }
     }

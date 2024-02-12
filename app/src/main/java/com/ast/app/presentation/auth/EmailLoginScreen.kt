@@ -31,16 +31,17 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
-import com.ast.app.presentation.common.PrivacyPolicy
 
 @Composable
 fun EmailLoginScreen(
+    emailLoginViewModel: EmailLoginViewModel = viewModel(),
     navController: NavController,
-    onForgotPasswordButtonClicked:() -> Unit
+    onForgotPasswordButtonClicked: () -> Unit
 ) {
     var email by rememberSaveable {
         mutableStateOf("")
@@ -58,9 +59,9 @@ fun EmailLoginScreen(
                 navigateUp = { navController.navigateUp() },
             )
         }
-    ){
+    ) { innerPadding ->
         Surface(
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(innerPadding)
         ) {
             Column(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_l)),
@@ -121,16 +122,15 @@ fun EmailLoginScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        emailLoginViewModel.onLoginButtonClicked(email, password)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(dimensionResource(id = R.dimen.button_height))
                 ) {
                     Text(text = "Log in", style = MaterialTheme.typography.titleMedium)
                 }
-
-                //privacy policy component
-                PrivacyPolicy()
             }
         }
     }
