@@ -1,9 +1,10 @@
 package com.ast.app.navigation
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Bookmarks
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,10 +14,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.ast.app.R
 
 @Composable
@@ -32,7 +36,7 @@ fun OnBoardTopAppBar(
         title = {
             Text(
                 text = stringResource(currentScreenTitle),
-//                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Medium),
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Medium),
             )
         },
         modifier = modifier,
@@ -40,7 +44,7 @@ fun OnBoardTopAppBar(
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
-                        imageVector = Icons.Filled.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(
                             id = R.string.back_button
                         )
@@ -61,14 +65,13 @@ fun AstAppTopAppBar(
 ) {
     TopAppBar(
         title = {
-//            Text(text = "Home")
         },
-        modifier = modifier,
+        modifier = modifier.shadow(elevation = 2.dp),
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
-                        imageVector = Icons.Filled.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(
                             id = R.string.back_button
                         )
@@ -85,7 +88,7 @@ fun AstAppTopAppBar(
             }
             IconButton(onClick = { /* do something */ }) {
                 Icon(
-                    Icons.Outlined.Bookmarks,
+                    Icons.Outlined.Book,
                     contentDescription = null,
                 )
             }

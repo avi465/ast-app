@@ -131,6 +131,7 @@ fun PhoneLoginScreen(
                     Spacer(modifier = Modifier.weight(1f))
                 }
 
+//                for login with google
                 OutlinedButton(
                     onClick = onLoginWithEmailButtonClicked,
                     colors = ButtonDefaults.buttonColors(
@@ -164,6 +165,8 @@ fun PhoneLoginScreen(
                 ) {
                     Text(text = "Send OTP", style = MaterialTheme.typography.titleMedium)
                 }
+
+                PrivacyPolicy()
             }
         }
     }

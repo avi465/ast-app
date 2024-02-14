@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -13,14 +12,13 @@ import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Password
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -31,15 +29,60 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
+import com.ast.app.presentation.common.AuthScreenButton
+import com.ast.app.presentation.common.ErrorScreen
 import com.ast.app.presentation.common.PrivacyPolicy
+import com.ast.app.presentation.state.UiState
 
 @Composable
 fun SignupScreen(
+    signupViewModel: SignupViewModel = viewModel(),
     navController: NavController
+) {
+    val uiState by signupViewModel.uiState.collectAsState()
+
+    when (uiState) {
+        is UiState.Error -> {
+            Scaffold {
+                ErrorScreen(
+                    modifier = Modifier.padding(it),
+                    navController = navController
+                )
+            }
+        }
+
+        UiState.Initial -> {
+            SignupScreenInitial(
+                isLoading = false,
+                navController = navController,
+                signupViewModel = signupViewModel
+            )
+        }
+
+        UiState.Loading -> {
+            SignupScreenInitial(
+                isLoading = true,
+                navController = navController,
+                signupViewModel = signupViewModel
+            )
+        }
+
+        is UiState.Success -> {
+            return
+        }
+    }
+}
+
+@Composable
+fun SignupScreenInitial(
+    isLoading: Boolean,
+    navController: NavController,
+    signupViewModel: SignupViewModel
 ) {
     var name by rememberSaveable {
         mutableStateOf("")
@@ -130,14 +173,13 @@ fun SignupScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.button_height))
-                ) {
-                    Text(text = "Sign up", style = MaterialTheme.typography.titleMedium)
-                }
+                AuthScreenButton(
+                    text = "Sign up",
+                    onClick = {
+                        signupViewModel.onSignupButtonClicked(name, email, password, navController)
+                    },
+                    isLoading = isLoading
+                )
 
                 //privacy policy component
                 PrivacyPolicy()

@@ -1,39 +1,39 @@
 package com.ast.app.presentation.auth
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.ast.app.data.loginUser
-import com.ast.app.model.LoginResponse
+import com.ast.app.graphs.Graph
+import com.ast.app.presentation.state.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class EmailLoginViewModel : ViewModel() {
-    sealed class LoginState {
-        data object Initial : LoginState()
-        data object Loading : LoginState()
-        data class Success(val response: LoginResponse) : LoginState()
-        data class Error(val error: String) : LoginState()
-    }
 
-    private val _loginState = MutableStateFlow<LoginState>(LoginState.Initial)
-    val loginState: StateFlow<LoginState> = _loginState
+    private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun onLoginButtonClicked(username: String, password: String) {
+    fun onLoginButtonClicked(username: String, password: String, navController: NavController) {
         viewModelScope.launch {
-            _loginState.value = LoginState.Loading
+            _uiState.value = UiState.Loading
             try {
                 val response = loginUser(username, password)
                 if (response != null) {
-                    _loginState.value = LoginState.Success(response)
+                    _uiState.value = UiState.Success(response)
                     // Handle successful login (e.g., store token, navigate to home screen)
-                    Log.d("Login", "Email Login Successful")
+                    navController.navigate(Graph.MAIN_SCREEN_PAGE){
+                        popUpTo(Graph.AUTHENTICATION){
+                            inclusive = true
+                        }
+                    }
                 } else {
-                    _loginState.value = LoginState.Error("Login failed")
+                    _uiState.value = UiState.Error("Login failed")
                 }
             } catch (e: Exception) {
-                _loginState.value = LoginState.Error("An error occurred")
+                _uiState.value = UiState.Error("Something went wrong")
             }
         }
     }

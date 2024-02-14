@@ -12,15 +12,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Password
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,12 +35,54 @@ import androidx.navigation.NavController
 import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
+import com.ast.app.presentation.common.AuthScreenButton
+import com.ast.app.presentation.common.ErrorScreen
+import com.ast.app.presentation.state.UiState
 
 @Composable
 fun EmailLoginScreen(
     emailLoginViewModel: EmailLoginViewModel = viewModel(),
     navController: NavController,
-    onForgotPasswordButtonClicked: () -> Unit
+) {
+    val uiState by emailLoginViewModel.uiState.collectAsState()
+
+    when (uiState) {
+        is UiState.Error -> {
+            Scaffold {
+                ErrorScreen(
+                    modifier = Modifier.padding(it),
+                    navController = navController
+                )
+            }
+        }
+
+        UiState.Initial -> {
+            EmailLoginScreenInitial(
+                isLoading = false,
+                navController = navController,
+                emailLoginViewModel = emailLoginViewModel
+            )
+        }
+
+        UiState.Loading -> {
+            EmailLoginScreenInitial(
+                isLoading = true,
+                navController = navController,
+                emailLoginViewModel = emailLoginViewModel
+            )
+        }
+
+        is UiState.Success -> {
+            return
+        }
+    }
+}
+
+@Composable
+fun EmailLoginScreenInitial(
+    isLoading: Boolean,
+    navController: NavController,
+    emailLoginViewModel: EmailLoginViewModel
 ) {
     var email by rememberSaveable {
         mutableStateOf("")
@@ -111,7 +152,9 @@ fun EmailLoginScreen(
                 )
 
                 TextButton(
-                    onClick = onForgotPasswordButtonClicked,
+                    onClick = {
+                        navController.navigate(AuthScreen.PasswordReset.route)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(dimensionResource(id = R.dimen.button_height))
@@ -121,16 +164,13 @@ fun EmailLoginScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                Button(
+                AuthScreenButton(
+                    text = "Log in",
                     onClick = {
-                        emailLoginViewModel.onLoginButtonClicked(email, password)
+                        emailLoginViewModel.onLoginButtonClicked(email, password, navController)
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.button_height))
-                ) {
-                    Text(text = "Log in", style = MaterialTheme.typography.titleMedium)
-                }
+                    isLoading = isLoading
+                )
             }
         }
     }

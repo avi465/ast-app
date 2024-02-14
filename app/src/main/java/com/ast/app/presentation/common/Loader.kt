@@ -9,11 +9,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -23,12 +26,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ast.app.ui.theme.AdvancedStudyTutorialsTheme
 
-const val numberOfDots = 7
-val dotSize = 10.dp
-val dotColor: Color = Color.Blue
+const val numberOfDots = 5
+val dotSize = 8.dp
 const val delayUnit = 200
 const val duration = numberOfDots * delayUnit
 val spaceBetween = 2.dp
+
 @Composable
 fun DotsTyping() {
     val maxOffset = (numberOfDots * 2).toFloat()
@@ -40,7 +43,7 @@ fun DotsTyping() {
                 .size(dotSize)
                 .offset(y = -offset.dp)
                 .background(
-                    color = dotColor,
+                    color = MaterialTheme.colors.primary,
                     shape = CircleShape
                 )
         )
@@ -54,9 +57,9 @@ fun DotsTyping() {
         targetValue = 0f,
         animationSpec = infiniteRepeatable(animation = keyframes {
             durationMillis = duration
-            0f at delay with LinearEasing
-            maxOffset at delay + delayUnit with LinearEasing
-            0f at delay + (duration/2)
+            0f at delay using LinearEasing
+            maxOffset at delay + delayUnit using LinearEasing
+            0f at delay + (duration / 2)
         }), label = ""
     )
 
@@ -77,10 +80,16 @@ fun DotsTyping() {
     }
 }
 
-@Preview()
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoaderPreview(){
-    AdvancedStudyTutorialsTheme{
-        DotsTyping()
+fun LoaderPreview() {
+    AdvancedStudyTutorialsTheme {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            DotsTyping()
+        }
     }
 }

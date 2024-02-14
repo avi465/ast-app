@@ -120,7 +120,7 @@ fun SplashScreen(
 
 @Preview
 @Composable
-fun SplashScreenPreview(){
+fun SplashScreenPreview() {
     SplashScreen(
         onGetStartedButtonClicked = { /*TODO*/ },
         onLoginButtonClicked = { /*TODO*/ },

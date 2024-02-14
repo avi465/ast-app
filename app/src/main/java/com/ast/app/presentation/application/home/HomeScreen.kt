@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.navigation.NavController
 import com.ast.app.R
+import com.ast.app.presentation.common.EmptyScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
@@ -44,7 +45,8 @@ fun HomeScreen(
         modifier = modifier
             .fillMaxSize()
     ) {
-        SliderBanner()
+//        SliderBanner()
+        EmptyScreen()
     }
 }
 
@@ -57,7 +59,6 @@ fun SliderBanner(
     val imageSlider = listOf(
         painterResource(id = R.drawable.img_banner1),
         painterResource(id = R.drawable.img_banner2),
-        painterResource(id = R.drawable.img_banner3)
     )
 
     LaunchedEffect(Unit) {
@@ -76,7 +77,7 @@ fun SliderBanner(
             state = pagerState,
             contentPadding = PaddingValues(horizontal = 16.dp),
             modifier = modifier
-                .height(114.dp)
+                .height(264.dp)
                 .fillMaxWidth()
         ) { page ->
             Card(
@@ -104,18 +105,20 @@ fun SliderBanner(
                 Image(
                     painter = imageSlider[page],
                     contentDescription = stringResource(R.string.image_slider),
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize()
                 )
             }
         }
 
-        HorizontalPagerIndicator(
-            pagerState = pagerState,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(16.dp)
-        )
+        if (pagerState.pageCount > 1){
+            HorizontalPagerIndicator(
+                pagerState = pagerState,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(16.dp)
+            )
+        }
     }
 }
 

@@ -11,11 +11,11 @@ suspend fun loginUser(username: String, password: String): LoginResponse? {
     try {
         val request = LoginRequest(username, password)
         val response = RetrofitClient.apiService.login(request)
-        Log.d("Login Controller", response.toString())
+        Log.d("AuthController", response.toString())
         return response
     } catch (e: Exception) {
         // Handle exceptions gracefully (e.g., log them, display error messages)
-        Log.d("Login Controller", e.toString())
+        Log.e("AuthController", e.toString())
         return null
     }
 }
@@ -25,9 +25,11 @@ suspend fun signupUser(name: String, email: String, password: String): SignupRes
     try {
         val request = SignupRequest(name, email, password)
         val response = RetrofitClient.apiService.signup(request)
+        Log.d("AuthController", response.toString())
         return response
     } catch (e: Exception) {
         // Handle exceptions gracefully (e.g., log them, display error messages)
+        Log.e("AuthController", e.toString())
         return null
     }
 }

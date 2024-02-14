@@ -44,10 +44,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 
         composable(route = AuthScreen.EmailLogin.route) {
             EmailLoginScreen(
-                navController = navController,
-                onForgotPasswordButtonClicked = {
-                    navController.navigate(AuthScreen.PasswordReset.route)
-                }
+                navController = navController
             )
         }
 
