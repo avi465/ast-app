@@ -14,6 +14,8 @@ import androidx.navigation.NavController
 import com.ast.app.navigation.AstAppTopAppBar
 import com.ast.app.navigation.AstBottomNavBar
 import com.ast.app.navigation.TopLevelDestination
+import com.ast.app.presentation.common.DotsTyping
+import com.ast.app.presentation.common.EmptyScreen
 
 @Composable
 fun MyClassScreen(
@@ -25,6 +27,6 @@ fun MyClassScreen(
         verticalArrangement = Arrangement.Center,
         modifier = modifier.fillMaxSize()
     ) {
-        Text(text = "My Class Screen")
+        EmptyScreen()
     }
 }

@@ -12,6 +12,7 @@ import com.ast.app.presentation.application.home.AskDoubtScreen
 import com.ast.app.presentation.application.home.HomeScreen
 import com.ast.app.presentation.application.home.LiveClassScreen
 import com.ast.app.presentation.application.home.MyClassScreen
+import com.ast.app.presentation.application.home.ProfileScreen
 import com.ast.app.presentation.common.EmptyScreen
 
 @Composable
@@ -37,6 +38,11 @@ fun MainNavGraph(modifier: Modifier, navController: NavHostController) {
         }
         composable(route = TopLevelDestination.AskDoubt.route) {
             AskDoubtScreen(
+                navController = navController
+            )
+        }
+        composable(route = TopLevelDestination.Profile.route) {
+            ProfileScreen(
                 navController = navController
             )
         }

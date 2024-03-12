@@ -1,10 +1,9 @@
 package com.ast.app.navigation
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Book
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -65,6 +63,10 @@ fun AstAppTopAppBar(
 ) {
     TopAppBar(
         title = {
+            Text(
+                text = "AST",
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Medium),
+            )
         },
         modifier = modifier.shadow(elevation = 2.dp),
         navigationIcon = {
@@ -88,7 +90,7 @@ fun AstAppTopAppBar(
             }
             IconButton(onClick = { /* do something */ }) {
                 Icon(
-                    Icons.Outlined.Book,
+                    Icons.Outlined.BookmarkBorder,
                     contentDescription = null,
                 )
             }

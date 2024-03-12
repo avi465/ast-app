@@ -7,11 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.ast.app.graphs.RootNavigationGraph
 import com.ast.app.ui.theme.AdvancedStudyTutorialsTheme
 
@@ -33,5 +29,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        const val SHARED_PREFS = "com.ast.app.SHARED_PREFS"
     }
 }

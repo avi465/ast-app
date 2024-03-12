@@ -8,19 +8,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Password
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,9 +45,9 @@ import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
 import com.ast.app.presentation.common.AuthScreenButton
-import com.ast.app.presentation.common.ErrorScreen
 import com.ast.app.presentation.common.PrivacyPolicy
 import com.ast.app.presentation.state.UiState
+import kotlinx.coroutines.launch
 
 @Composable
 fun SignupScreen(
@@ -46,44 +56,6 @@ fun SignupScreen(
 ) {
     val uiState by signupViewModel.uiState.collectAsState()
 
-    when (uiState) {
-        is UiState.Error -> {
-            Scaffold {
-                ErrorScreen(
-                    modifier = Modifier.padding(it),
-                    navController = navController
-                )
-            }
-        }
-
-        UiState.Initial -> {
-            SignupScreenInitial(
-                isLoading = false,
-                navController = navController,
-                signupViewModel = signupViewModel
-            )
-        }
-
-        UiState.Loading -> {
-            SignupScreenInitial(
-                isLoading = true,
-                navController = navController,
-                signupViewModel = signupViewModel
-            )
-        }
-
-        is UiState.Success -> {
-            return
-        }
-    }
-}
-
-@Composable
-fun SignupScreenInitial(
-    isLoading: Boolean,
-    navController: NavController,
-    signupViewModel: SignupViewModel
-) {
     var name by rememberSaveable {
         mutableStateOf("")
     }
@@ -94,6 +66,19 @@ fun SignupScreenInitial(
         mutableStateOf("")
     }
 
+    var isNameFieldValid by rememberSaveable {
+        mutableStateOf(true)
+    }
+    var isEmailFieldValid by rememberSaveable {
+        mutableStateOf(true)
+    }
+    var isPasswordFieldValid by rememberSaveable {
+        mutableStateOf(true)
+    }
+
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -102,10 +87,13 @@ fun SignupScreenInitial(
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
-    ) {
+    ) { innerPadding ->
         Surface(
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(innerPadding)
         ) {
             Column(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_l)),
@@ -115,7 +103,7 @@ fun SignupScreenInitial(
                 OutlinedTextField(
                     label = {
                         Text(
-                            text = "Enter your full name",
+                            text = "Enter your full name*",
                         )
                     },
                     singleLine = true,
@@ -124,16 +112,49 @@ fun SignupScreenInitial(
                         imeAction = ImeAction.Next
                     ),
                     value = name,
-                    onValueChange = { name = it },
+                    onValueChange = {
+                        name = it
+                        isNameFieldValid = name.isNotBlank()
+                    },
                     leadingIcon = {
                         Icon(imageVector = Icons.Outlined.Person, contentDescription = null)
+                    },
+                    trailingIcon = {
+                        if (!isNameFieldValid) {
+                            Icon(
+                                imageVector = Icons.Outlined.ErrorOutline,
+                                contentDescription = "error"
+                            )
+                        } else if (name.isNotEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    name = ""
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Cancel,
+                                    contentDescription = "cancel",
+                                )
+                            }
+                        }
+                    },
+                    isError = !isNameFieldValid,
+                    supportingText = {
+                        if (!isNameFieldValid) {
+                            Text(
+                                text = "Name can't be blank",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        } else {
+                            Text(text = "*required")
+                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     label = {
                         Text(
-                            text = "Enter e-mail address",
+                            text = "Enter e-mail address*",
                         )
                     },
                     singleLine = true,
@@ -142,9 +163,42 @@ fun SignupScreenInitial(
                         imeAction = ImeAction.Next
                     ),
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = {
+                        email = it
+                        isEmailFieldValid = email.isNotBlank()
+                    },
                     leadingIcon = {
                         Icon(imageVector = Icons.Outlined.Email, contentDescription = null)
+                    },
+                    trailingIcon = {
+                        if (!isEmailFieldValid) {
+                            Icon(
+                                imageVector = Icons.Outlined.ErrorOutline,
+                                contentDescription = "error"
+                            )
+                        } else if (email.isNotEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    email = ""
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Cancel,
+                                    contentDescription = "cancel",
+                                )
+                            }
+                        }
+                    },
+                    isError = !isEmailFieldValid,
+                    supportingText = {
+                        if (!isEmailFieldValid) {
+                            Text(
+                                text = "Email can't be blank",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        } else {
+                            Text(text = "*required")
+                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -152,7 +206,7 @@ fun SignupScreenInitial(
                 OutlinedTextField(
                     label = {
                         Text(
-                            text = "Enter strong password",
+                            text = "Enter strong password*",
                         )
                     },
                     singleLine = true,
@@ -161,25 +215,134 @@ fun SignupScreenInitial(
                         imeAction = ImeAction.Done
                     ),
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = {
+                        password = it
+                        isPasswordFieldValid = password.isNotBlank()
+                    },
                     leadingIcon = {
                         Icon(imageVector = Icons.Outlined.Password, contentDescription = null)
                     },
                     trailingIcon = {
-                        Icon(imageVector = Icons.Outlined.Key, contentDescription = null)
+                        if (!isEmailFieldValid) {
+                            Icon(
+                                imageVector = Icons.Outlined.ErrorOutline,
+                                contentDescription = "error"
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Outlined.Key,
+                                contentDescription = "show/hide password"
+                            )
+                        }
+                    },
+                    isError = !isPasswordFieldValid,
+                    supportingText = {
+                        if (!isPasswordFieldValid) {
+                            Text(
+                                text = "Password can't be blank",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        } else {
+                            Text(text = "*required")
+                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                AuthScreenButton(
-                    text = "Sign up",
-                    onClick = {
-                        signupViewModel.onSignupButtonClicked(name, email, password, navController)
-                    },
-                    isLoading = isLoading
-                )
+                when (uiState) {
+                    is UiState.Error -> {
+                        LaunchedEffect(snackbarHostState) {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    (uiState as UiState.Error).error,
+                                    actionLabel = "Dismiss",
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        }
+
+                        AuthScreenButton(
+                            text = "Sign up",
+                            onClick = {
+                                if (name.isBlank()) {
+                                    isNameFieldValid = false
+                                }
+                                if (email.isBlank()) {
+                                    isEmailFieldValid = false
+                                }
+                                if (password.isBlank()) {
+                                    isPasswordFieldValid = false
+                                }
+                                if (isNameFieldValid && isEmailFieldValid && isPasswordFieldValid) {
+                                    signupViewModel.onSignupButtonClicked(
+                                        name,
+                                        email,
+                                        password,
+                                        navController
+                                    )
+                                }
+                            },
+                            isLoading = false
+                        )
+                    }
+
+                    UiState.Initial -> {
+                        AuthScreenButton(
+                            text = "Sign up",
+                            onClick = {
+                                if (name.isBlank()) {
+                                    isNameFieldValid = false
+                                }
+                                if (email.isBlank()) {
+                                    isEmailFieldValid = false
+                                }
+                                if (password.isBlank()) {
+                                    isPasswordFieldValid = false
+                                }
+                                if (isNameFieldValid && isEmailFieldValid && isPasswordFieldValid) {
+                                    signupViewModel.onSignupButtonClicked(
+                                        name,
+                                        email,
+                                        password,
+                                        navController
+                                    )
+                                }
+                            },
+                            isLoading = false
+                        )
+                    }
+
+                    UiState.Loading -> {
+                        AuthScreenButton(
+                            text = "Sign up",
+                            onClick = {
+                                if (name.isBlank()) {
+                                    isNameFieldValid = false
+                                }
+                                if (email.isBlank()) {
+                                    isEmailFieldValid = false
+                                }
+                                if (password.isBlank()) {
+                                    isPasswordFieldValid = false
+                                }
+                                if (isNameFieldValid && isEmailFieldValid && isPasswordFieldValid) {
+                                    signupViewModel.onSignupButtonClicked(
+                                        name,
+                                        email,
+                                        password,
+                                        navController
+                                    )
+                                }
+                            },
+                            isLoading = true
+                        )
+                    }
+
+                    is UiState.Success -> {
+                    }
+                }
 
                 //privacy policy component
                 PrivacyPolicy()

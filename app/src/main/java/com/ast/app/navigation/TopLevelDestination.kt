@@ -2,10 +2,12 @@ package com.ast.app.navigation
 
 import android.app.Activity
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Draw
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.ImportContacts
 import androidx.compose.material.icons.outlined.Sensors
+import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Draw
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.ImportContacts
@@ -67,6 +69,14 @@ sealed class TopLevelDestination(
         iconText = "ask_doubt",
         titleText = "Ask Doubt"
     )
+
+    object Profile : TopLevelDestination(
+        route = "PROFILE",
+        selectedIcon = Icons.Rounded.AccountCircle,
+        unselectedIcon = Icons.Outlined.AccountCircle,
+        iconText = "profile",
+        titleText = "Profile"
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,6 +92,7 @@ fun AstBottomNavBar(navController: NavHostController) {
         TopLevelDestination.LiveClass,
         TopLevelDestination.MyClass,
         TopLevelDestination.AskDoubt,
+//        TopLevelDestination.Profile
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination

@@ -1,5 +1,6 @@
 package com.ast.app.presentation.auth
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,23 +10,34 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Password
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,60 +48,33 @@ import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
 import com.ast.app.presentation.common.AuthScreenButton
-import com.ast.app.presentation.common.ErrorScreen
 import com.ast.app.presentation.state.UiState
+import kotlinx.coroutines.launch
 
 @Composable
 fun EmailLoginScreen(
     emailLoginViewModel: EmailLoginViewModel = viewModel(),
     navController: NavController,
 ) {
+    val context:Context = LocalContext.current
+
     val uiState by emailLoginViewModel.uiState.collectAsState()
 
-    when (uiState) {
-        is UiState.Error -> {
-            Scaffold {
-                ErrorScreen(
-                    modifier = Modifier.padding(it),
-                    navController = navController
-                )
-            }
-        }
-
-        UiState.Initial -> {
-            EmailLoginScreenInitial(
-                isLoading = false,
-                navController = navController,
-                emailLoginViewModel = emailLoginViewModel
-            )
-        }
-
-        UiState.Loading -> {
-            EmailLoginScreenInitial(
-                isLoading = true,
-                navController = navController,
-                emailLoginViewModel = emailLoginViewModel
-            )
-        }
-
-        is UiState.Success -> {
-            return
-        }
-    }
-}
-
-@Composable
-fun EmailLoginScreenInitial(
-    isLoading: Boolean,
-    navController: NavController,
-    emailLoginViewModel: EmailLoginViewModel
-) {
     var email by rememberSaveable {
         mutableStateOf("")
     }
     var password by rememberSaveable {
         mutableStateOf("")
     }
+    var isEmailFieldValid by rememberSaveable {
+        mutableStateOf(true)
+    }
+    var isPasswordFieldValid by rememberSaveable {
+        mutableStateOf(true)
+    }
+
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -99,6 +84,9 @@ fun EmailLoginScreenInitial(
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         }
     ) { innerPadding ->
         Surface(
@@ -113,7 +101,7 @@ fun EmailLoginScreenInitial(
                 OutlinedTextField(
                     label = {
                         Text(
-                            text = "Enter your e-mail",
+                            text = "Enter e-mail address*",
                         )
                     },
                     singleLine = true,
@@ -122,17 +110,49 @@ fun EmailLoginScreenInitial(
                         imeAction = ImeAction.Next
                     ),
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = {
+                        email = it
+                        isEmailFieldValid = email.isNotBlank()
+                    },
                     leadingIcon = {
                         Icon(imageVector = Icons.Outlined.Email, contentDescription = null)
                     },
+                    trailingIcon = {
+                        if (!isEmailFieldValid) {
+                            Icon(
+                                imageVector = Icons.Outlined.ErrorOutline,
+                                contentDescription = "error"
+                            )
+                        } else if (email.isNotEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    email = ""
+                                },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Cancel,
+                                    contentDescription = "cancel",
+                                )
+                            }
+                        }
+                    },
+                    isError = !isEmailFieldValid,
+                    supportingText = {
+                        if (!isEmailFieldValid) {
+                            Text(
+                                text = "Email can't be blank",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        } else {
+                            Text(text = "*required")
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
-
                 OutlinedTextField(
                     label = {
                         Text(
-                            text = "Enter your password",
+                            text = "Enter your password*",
                         )
                     },
                     singleLine = true,
@@ -141,12 +161,36 @@ fun EmailLoginScreenInitial(
                         imeAction = ImeAction.Done
                     ),
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = {
+                        password = it
+                        isPasswordFieldValid = password.isNotBlank()
+                    },
                     leadingIcon = {
                         Icon(imageVector = Icons.Outlined.Password, contentDescription = null)
                     },
                     trailingIcon = {
-                        Icon(imageVector = Icons.Outlined.Key, contentDescription = null)
+                        if (!isEmailFieldValid) {
+                            Icon(
+                                imageVector = Icons.Outlined.ErrorOutline,
+                                contentDescription = "error"
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Outlined.Key,
+                                contentDescription = "show/hide password"
+                            )
+                        }
+                    },
+                    isError = !isPasswordFieldValid,
+                    supportingText = {
+                        if (!isPasswordFieldValid) {
+                            Text(
+                                text = "Password can't be blank",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        } else {
+                            Text(text = "*required")
+                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -164,13 +208,89 @@ fun EmailLoginScreenInitial(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                AuthScreenButton(
-                    text = "Log in",
-                    onClick = {
-                        emailLoginViewModel.onLoginButtonClicked(email, password, navController)
-                    },
-                    isLoading = isLoading
-                )
+                when (uiState) {
+                    is UiState.Error -> {
+                        LaunchedEffect(snackbarHostState) {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    (uiState as UiState.Error).error,
+                                    actionLabel = "Dismiss",
+                                    duration = SnackbarDuration.Short
+                                )
+                            }
+                        }
+                        AuthScreenButton(
+                            text = "Log in",
+                            onClick = {
+                                if (email.isBlank()) {
+                                    isEmailFieldValid = false
+                                }
+                                if (password.isBlank()) {
+                                    isPasswordFieldValid = false
+                                }
+                                if (isEmailFieldValid && isPasswordFieldValid) {
+                                    emailLoginViewModel.onLoginButtonClicked(
+                                        email,
+                                        password,
+                                        context,
+                                        navController
+                                    )
+                                }
+                            },
+                            isLoading = false
+                        )
+                    }
+
+                    UiState.Initial -> {
+                        AuthScreenButton(
+                            text = "Log in",
+                            onClick = {
+                                if (email.isBlank()) {
+                                    isEmailFieldValid = false
+                                }
+                                if (password.isBlank()) {
+                                    isPasswordFieldValid = false
+                                }
+                                if (isEmailFieldValid && isPasswordFieldValid) {
+                                    emailLoginViewModel.onLoginButtonClicked(
+                                        email,
+                                        password,
+                                        context,
+                                        navController
+                                    )
+                                }
+                            },
+                            isLoading = false
+                        )
+                    }
+
+                    UiState.Loading -> {
+                        AuthScreenButton(
+                            text = "Log in",
+                            onClick = {
+                                if (email.isBlank()) {
+                                    isEmailFieldValid = false
+                                }
+                                if (password.isBlank()) {
+                                    isPasswordFieldValid = false
+                                }
+                                if (isEmailFieldValid && isPasswordFieldValid) {
+                                    emailLoginViewModel.onLoginButtonClicked(
+                                        email,
+                                        password,
+                                        context,
+                                        navController
+                                    )
+                                }
+                            },
+                            isLoading = true
+                        )
+                    }
+
+                    is UiState.Success -> {
+                    }
+
+                }
             }
         }
     }

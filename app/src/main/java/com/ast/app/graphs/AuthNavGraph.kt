@@ -18,27 +18,17 @@ import com.ast.app.presentation.auth.VerifyPasswordResetScreen
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.AUTHENTICATION,
-        startDestination = AuthScreen.Start.route
+        startDestination = AuthScreen.Splash.route
     ) {
 
-        composable(route = AuthScreen.Start.route) {
+        composable(route = AuthScreen.Splash.route) {
             SplashScreen(
-                navController = navController,
-                onLoginButtonClicked = {
-                    navController.navigate(AuthScreen.PhoneLogin.route)
-                }, onGetStartedButtonClicked = {
-                    navController.navigate(AuthScreen.Signup.route)
-                }
+                navController = navController
             )
         }
         composable(route = AuthScreen.PhoneLogin.route) {
             PhoneLoginScreen(
-                navController = navController,
-                onSendOtpButtonClicked = {
-                    navController.navigate(AuthScreen.VerifyOtp.route)
-                }, onLoginWithEmailButtonClicked = {
-                    navController.navigate(AuthScreen.EmailLogin.route)
-                }
+                navController = navController
             )
         }
 
@@ -56,11 +46,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 
         composable(route = AuthScreen.VerifyOtp.route) {
             VerifyOtpScreen(
-                navController = navController,
-                onResendOtpTextClicked = {},
-                onVerifyOtpButtonClicked = {
-                    navController.navigate(Graph.MAIN_SCREEN_PAGE)
-                }
+                navController = navController
             )
         }
 
@@ -82,7 +68,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 }
 
 sealed class AuthScreen(val route: String, @StringRes val title: Int) {
-    object Start : AuthScreen(route = "start", title = R.string.start)
+    object Splash : AuthScreen(route = "splash", title = R.string.start)
     object PhoneLogin : AuthScreen(route = "phone_login", title = R.string.phone_login)
     object VerifyOtp : AuthScreen(route = "verify_otp", title = R.string.verify_otp)
     object EmailLogin : AuthScreen(route = "email_login", title = R.string.email_login)

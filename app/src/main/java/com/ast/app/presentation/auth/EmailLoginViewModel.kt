@@ -1,5 +1,6 @@
 package com.ast.app.presentation.auth
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -16,7 +17,12 @@ class EmailLoginViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun onLoginButtonClicked(username: String, password: String, navController: NavController) {
+    fun onLoginButtonClicked(
+        username: String,
+        password: String,
+        context: Context,
+        navController: NavController
+    ) {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             try {
@@ -24,11 +30,13 @@ class EmailLoginViewModel : ViewModel() {
                 if (response != null) {
                     _uiState.value = UiState.Success(response)
                     // Handle successful login (e.g., store token, navigate to home screen)
-                    navController.navigate(Graph.MAIN_SCREEN_PAGE){
-                        popUpTo(Graph.AUTHENTICATION){
+                    navController.navigate(Graph.MAIN_SCREEN_PAGE) {
+                        popUpTo(Graph.AUTHENTICATION) {
                             inclusive = true
                         }
                     }
+                    // Remember login using shared prefs
+                    storeCredentials(username, password, context)
                 } else {
                     _uiState.value = UiState.Error("Login failed")
                 }
@@ -36,5 +44,19 @@ class EmailLoginViewModel : ViewModel() {
                 _uiState.value = UiState.Error("Something went wrong")
             }
         }
+    }
+
+    private fun storeCredentials(username: String, password: String, context: Context) {
+        val sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("username", username)
+            putString("password", password)
+            putBoolean("remember_me", true)
+            apply()
+        }
+    }
+
+    companion object {
+        const val SHARED_PREFS = "com.ast.app.SHARED_PREFS"
     }
 }

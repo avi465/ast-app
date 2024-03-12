@@ -35,15 +35,13 @@ import com.ast.app.presentation.common.PrivacyPolicy
 
 @Composable
 fun SplashScreen(
-    onGetStartedButtonClicked: () -> Unit,
-    onLoginButtonClicked: () -> Unit,
     navController: NavController
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             OnBoardTopAppBar(
-                currentScreenTitle = AuthScreen.Start.title,
+                currentScreenTitle = AuthScreen.Splash.title,
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
             )
@@ -78,7 +76,9 @@ fun SplashScreen(
                 verticalArrangement = Arrangement.Bottom,
             ) {
                 OutlinedButton(
-                    onClick = onGetStartedButtonClicked,
+                    onClick = {
+                        navController.navigate(AuthScreen.Signup.route)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(dimensionResource(id = R.dimen.button_height))
@@ -91,7 +91,9 @@ fun SplashScreen(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_s)))
 
                 TextButton(
-                    onClick = onLoginButtonClicked,
+                    onClick = {
+                        navController.navigate(AuthScreen.PhoneLogin.route)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(dimensionResource(id = R.dimen.button_height))
@@ -122,8 +124,6 @@ fun SplashScreen(
 @Composable
 fun SplashScreenPreview() {
     SplashScreen(
-        onGetStartedButtonClicked = { /*TODO*/ },
-        onLoginButtonClicked = { /*TODO*/ },
         navController = rememberNavController()
     )
 }

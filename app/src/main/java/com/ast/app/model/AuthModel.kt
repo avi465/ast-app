@@ -9,7 +9,7 @@ data class LoginRequest(
 )
 @Serializable
 data class LoginResponse(
-    val message: String,
+    val message: String?,
 )
 @Serializable
 data class SignupRequest(
@@ -19,6 +19,23 @@ data class SignupRequest(
 )
 @Serializable
 data class SignupResponse(
+    val message: String?,
+)
+@Serializable
+data class GetPhoneOtpRequest(
+    val phone: String,
+)
+@Serializable
+data class GetPhoneOtpResponse(
+    val message: String?,
+)
+@Serializable
+data class VerifyPhoneOtpRequest(
+    val phone: String,
+    val otp: String,
+)
+@Serializable
+data class VerifyPhoneOtpResponse(
     val message: String?,
 )
 
