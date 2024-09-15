@@ -5,8 +5,9 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 
-private const val API_ENDPOINT = "https://fcba-49-37-114-142.ngrok-free.app"
-private const val BASE_URL = "$API_ENDPOINT/api/auth/"
+//private const val API_ENDPOINT = "https://ast-qbnh4.ondigitalocean.app"
+private const val API_ENDPOINT = "https://f127-152-59-128-255.ngrok-free.app"
+private const val BASE_URL = "$API_ENDPOINT/api/"
 
 object RetrofitClient {
     private val retrofit by lazy {

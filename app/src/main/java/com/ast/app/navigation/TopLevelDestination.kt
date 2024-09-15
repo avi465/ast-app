@@ -7,21 +7,28 @@ import androidx.compose.material.icons.outlined.Draw
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.ImportContacts
 import androidx.compose.material.icons.outlined.Sensors
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Draw
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.ImportContacts
 import androidx.compose.material.icons.rounded.Sensors
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.ShoppingBag
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
@@ -54,28 +61,28 @@ sealed class TopLevelDestination(
         titleText = "Live Class"
     )
 
-    object MyClass : TopLevelDestination(
-        route = "MY_CLASS",
+    object MyCourse : TopLevelDestination(
+        route = "MY_COURSE",
         selectedIcon = Icons.Rounded.ImportContacts,
         unselectedIcon = Icons.Outlined.ImportContacts,
-        iconText = "my_class",
-        titleText = "My Class"
+        iconText = "my_course",
+        titleText = "My Course"
     )
 
-    object AskDoubt : TopLevelDestination(
-        route = "ASK_DOUBT",
-        selectedIcon = Icons.Rounded.Draw,
-        unselectedIcon = Icons.Outlined.Draw,
-        iconText = "ask_doubt",
-        titleText = "Ask Doubt"
+    object Store : TopLevelDestination(
+        route = "STORE",
+        selectedIcon = Icons.Rounded.ShoppingBag,
+        unselectedIcon = Icons.Outlined.ShoppingBag,
+        iconText = "store",
+        titleText = "Store"
     )
 
-    object Profile : TopLevelDestination(
-        route = "PROFILE",
-        selectedIcon = Icons.Rounded.AccountCircle,
-        unselectedIcon = Icons.Outlined.AccountCircle,
-        iconText = "profile",
-        titleText = "Profile"
+    object Settings : TopLevelDestination(
+        route = "Settings",
+        selectedIcon = Icons.Rounded.Settings,
+        unselectedIcon = Icons.Outlined.Settings,
+        iconText = "Settings",
+        titleText = "Settings"
     )
 }
 
@@ -85,21 +92,23 @@ fun AstBottomNavBar(navController: NavHostController) {
     // changing the navigation bar color to match the bottom navigation bar
     val view = LocalView.current
     val window = (view.context as Activity).window
-    window.navigationBarColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp).toArgb()
+    window.navigationBarColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp).toArgb()
 
     val screens = listOf(
         TopLevelDestination.Home,
         TopLevelDestination.LiveClass,
-        TopLevelDestination.MyClass,
-        TopLevelDestination.AskDoubt,
-//        TopLevelDestination.Profile
+        TopLevelDestination.MyCourse,
+        TopLevelDestination.Store,
+        TopLevelDestination.Settings,
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
     val bottomBarDestination = screens.any { it.route == currentDestination?.route }
     if (bottomBarDestination) {
-        NavigationBar {
+        NavigationBar(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
+        ) {
             screens.forEach { item ->
                 val selected = currentDestination?.hierarchy?.any {
                     it.route == item.route

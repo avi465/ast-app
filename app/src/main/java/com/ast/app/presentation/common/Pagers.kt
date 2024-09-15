@@ -19,9 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,17 +32,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.ast.app.R
 import com.ast.app.ui.theme.AdvancedStudyTutorialsTheme
-import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BannerPager(
-    modifier: Modifier = Modifier
-) {
+fun BannerPager() {
     val imageSlider = listOf(
-        painterResource(id = R.drawable.img_banner1),
-        painterResource(id = R.drawable.img_banner1),
+        painterResource(id = R.drawable.img_banner1)
     )
 
     val pagerState = rememberPagerState(pageCount = {
@@ -72,7 +66,8 @@ fun BannerPager(
     Box {
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.height(224.dp)
+            modifier = Modifier
+                .height(224.dp)
         ) { page ->
             Card(
                 Modifier
@@ -98,36 +93,39 @@ fun BannerPager(
                 Image(
                     painter = imageSlider[page],
                     contentDescription = null,
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }
 
-        Card(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .wrapContentHeight()
-                .wrapContentWidth()
-                .padding(bottom = 8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.2f)
-            )
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.Center
+        if (pagerState.pageCount > 1) {
+            Card(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .wrapContentHeight()
+                    .wrapContentWidth()
+                    .padding(bottom = 8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.2f)
+                )
             ) {
-                repeat(pagerState.pageCount) { iteration ->
-                    val color =
-                        if (pagerState.currentPage == iteration) MaterialTheme.colorScheme.primary else Color.LightGray
-                    val width = if (pagerState.currentPage == iteration) 12.dp else 6.dp
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp, vertical = 2.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                            .width(width)
-                            .height(6.dp)
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    repeat(pagerState.pageCount) { iteration ->
+                        val color =
+                            if (pagerState.currentPage == iteration) MaterialTheme.colorScheme.primary else Color.LightGray
+                        val width = if (pagerState.currentPage == iteration) 12.dp else 6.dp
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 4.dp, vertical = 2.dp)
+                                .clip(CircleShape)
+                                .background(color)
+                                .width(width)
+                                .height(6.dp)
+                        )
+                    }
                 }
             }
         }
@@ -138,8 +136,6 @@ fun BannerPager(
 @Composable
 fun SliderBannerPreview() {
     AdvancedStudyTutorialsTheme {
-        Scaffold {
-            BannerPager(modifier = Modifier.padding(it))
-        }
+        BannerPager()
     }
 }

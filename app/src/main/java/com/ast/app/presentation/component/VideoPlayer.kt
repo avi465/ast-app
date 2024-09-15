@@ -2,6 +2,7 @@ package com.ast.app.presentation.component
 
 import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -70,6 +71,7 @@ fun VideoPlayer(url: String){
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight()
             .aspectRatio(16f / 9f),
         factory = {
             PlayerView(context).also { playerView ->

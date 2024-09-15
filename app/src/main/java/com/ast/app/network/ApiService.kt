@@ -1,5 +1,6 @@
 package com.ast.app.network
 
+import com.ast.app.model.Course
 import com.ast.app.model.GetPhoneOtpRequest
 import com.ast.app.model.GetPhoneOtpResponse
 import com.ast.app.model.LoginRequest
@@ -9,24 +10,28 @@ import com.ast.app.model.SignupResponse
 import com.ast.app.model.VerifyPhoneOtpRequest
 import com.ast.app.model.VerifyPhoneOtpResponse
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
-    @POST("login")
+    @POST("auth/login")
     suspend fun login(@Body request: LoginRequest): LoginResponse
 
-    @POST("register")
+    @POST("auth/register")
     suspend fun signup(@Body request: SignupRequest): SignupResponse
 
-    @POST("get-otp")
+    @POST("auth/get-otp")
     suspend fun getPhoneOtp(@Body request: GetPhoneOtpRequest): GetPhoneOtpResponse
 
-    @POST("verify-otp")
+    @POST("auth/verify-otp")
     suspend fun verifyPhoneOtp(@Body request: VerifyPhoneOtpRequest): VerifyPhoneOtpResponse
 
-//    @POST("logout")
+//    @POST("auth/logout")
 //    suspend fun logout()
 
-//    @GET("verify-session")
+//    @GET("auth/verify-session")
 //    suspend fun verifySession()
+
+    @GET("products")
+    suspend fun getCourses(): List<Course>
 }

@@ -17,6 +17,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             AstAppTopAppBar(
                 canNavigateBack = navController.previousBackStackEntry != null,
                 navigateUp = { navController.navigateUp() },
+                navController = navController
             )
         },
         bottomBar = {

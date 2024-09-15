@@ -19,8 +19,8 @@ suspend fun loginUser(username: String, password: String): LoginResponse? {
         return response
     } catch (e: Exception) {
         // Handle exceptions gracefully (e.g., log them, display error messages)
-        Log.e("AuthController", e.toString())
-        return null
+        Log.e("AuthController", e.message.toString())
+        return null;
     }
 }
 

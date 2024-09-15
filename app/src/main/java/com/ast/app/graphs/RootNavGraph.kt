@@ -32,6 +32,8 @@ object Graph {
     const val AUTHENTICATION = "auth_graph"
     const val MAIN_SCREEN_PAGE = "main_screen_graph"
     const val DETAILS = "details_graph"
+    const val LIVE_CLASS = "live_class_graph"
+    const val CART = "cart_graph"
 }
 
 object Screen {

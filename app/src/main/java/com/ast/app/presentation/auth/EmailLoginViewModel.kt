@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.ast.app.MainActivity
 import com.ast.app.data.loginUser
 import com.ast.app.graphs.Graph
 import com.ast.app.presentation.state.UiState
@@ -41,22 +42,18 @@ class EmailLoginViewModel : ViewModel() {
                     _uiState.value = UiState.Error("Login failed")
                 }
             } catch (e: Exception) {
-                _uiState.value = UiState.Error("Something went wrong")
+                _uiState.value = UiState.Error("Error: " + e.message)
             }
         }
     }
 
     private fun storeCredentials(username: String, password: String, context: Context) {
-        val sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
+        val sharedPreferences = context.getSharedPreferences(MainActivity.SHARED_PREFS, Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
             putString("username", username)
             putString("password", password)
             putBoolean("remember_me", true)
             apply()
         }
-    }
-
-    companion object {
-        const val SHARED_PREFS = "com.ast.app.SHARED_PREFS"
     }
 }
