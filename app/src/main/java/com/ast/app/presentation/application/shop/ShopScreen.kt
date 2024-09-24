@@ -4,6 +4,7 @@ import android.app.Activity
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -146,32 +147,32 @@ fun CourseCard(
     val paymentResult = paymentViewModel.paymentResult.collectAsState().value
 
     ElevatedCard(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(8.dp)
     ) {
-        Image(
-            painter = img,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize().height(128.dp)
-        )
+        Column {
+            Image(
+                painter = img,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .height(128.dp)
+            )
 
-        ListItem(
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent,
-            ),
-            overlineContent = { Text(text = "BANK/SSC/RAILWAY") },
-            headlineContent = { Text(text = name) },
-            supportingContent = { Text(text = description) },
-        )
+            ListItem(
+                overlineContent = { Text(text = "BANK/SSC/RAILWAY") },
+                headlineContent = { Text(text = name) },
+                supportingContent = { Text(text = description) },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+            )
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+            ) {
                 Row(
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -230,4 +231,5 @@ fun CourseCard(
             }
         }
     }
+}
 //}

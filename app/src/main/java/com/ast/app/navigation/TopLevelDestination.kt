@@ -1,6 +1,7 @@
 package com.ast.app.navigation
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Draw
@@ -20,6 +21,7 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
@@ -27,6 +29,8 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -37,6 +41,8 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.launch
 
 sealed class TopLevelDestination(
     val route: String,
@@ -90,9 +96,17 @@ sealed class TopLevelDestination(
 @Composable
 fun AstBottomNavBar(navController: NavHostController) {
     // changing the navigation bar color to match the bottom navigation bar
-    val view = LocalView.current
-    val window = (view.context as Activity).window
-    window.navigationBarColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp).toArgb()
+    // Get access to the current Activity's window
+    val window = (LocalView.current.context as? Activity)?.window
+    val color = colorScheme.surfaceContainer.toArgb()
+    // Ensure it pre-composed before LaunchedEffect Load
+    window?.navigationBarColor = color
+    // Update the navigation bar color using LaunchedEffect
+    LaunchedEffect(colorScheme) {
+        launch {
+            window?.navigationBarColor = color
+        }
+    }
 
     val screens = listOf(
         TopLevelDestination.Home,
@@ -106,9 +120,7 @@ fun AstBottomNavBar(navController: NavHostController) {
 
     val bottomBarDestination = screens.any { it.route == currentDestination?.route }
     if (bottomBarDestination) {
-        NavigationBar(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-        ) {
+        NavigationBar {
             screens.forEach { item ->
                 val selected = currentDestination?.hierarchy?.any {
                     it.route == item.route

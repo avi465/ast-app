@@ -6,7 +6,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 
 //private const val API_ENDPOINT = "https://ast-qbnh4.ondigitalocean.app"
-private const val API_ENDPOINT = "https://f127-152-59-128-255.ngrok-free.app"
+private const val API_ENDPOINT = "https://29042a9e48ba-7364538330906752083.ngrok-free.app"
 private const val BASE_URL = "$API_ENDPOINT/api/"
 
 object RetrofitClient {

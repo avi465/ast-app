@@ -97,25 +97,19 @@ fun AstAppTopAppBar(
                 )
             },
             modifier = modifier.shadow(elevation = 2.dp),
-            navigationIcon = {
-                if (canNavigateBack) {
-                    IconButton(onClick = navigateUp) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(
-                                id = R.string.back_button
-                            )
-                        )
-                    }
-                }
-            },
+//            navigationIcon = {
+//                if (canNavigateBack) {
+//                    IconButton(onClick = navigateUp) {
+//                        Icon(
+//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                            contentDescription = stringResource(
+//                                id = R.string.back_button
+//                            )
+//                        )
+//                    }
+//                }
+//            },
             actions = {
-                IconButton(onClick = { /* do something */ }) {
-                    Icon(
-                        Icons.Outlined.Search,
-                        contentDescription = null,
-                    )
-                }
                 IconButton(onClick = { /* do something */ }) {
                     Icon(
                         Icons.Outlined.NotificationsActive,
@@ -145,18 +139,18 @@ fun AstAppTopAppBar(
                     ),
                 )
             },
-            navigationIcon = {
-                if (canNavigateBack) {
-                    IconButton(onClick = navigateUp) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(
-                                id = R.string.back_button
-                            )
-                        )
-                    }
-                }
-            },
+//            navigationIcon = {
+//                if (canNavigateBack) {
+//                    IconButton(onClick = navigateUp) {
+//                        Icon(
+//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                            contentDescription = stringResource(
+//                                id = R.string.back_button
+//                            )
+//                        )
+//                    }
+//                }
+//            },
             actions = {
                 IconButton(onClick = { /* do something */ }) {
                     Icon(
@@ -189,18 +183,18 @@ fun AstAppTopAppBar(
                     ),
                 )
             },
-            navigationIcon = {
-                if (canNavigateBack) {
-                    IconButton(onClick = navigateUp) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(
-                                id = R.string.back_button
-                            )
-                        )
-                    }
-                }
-            },
+//            navigationIcon = {
+//                if (canNavigateBack) {
+//                    IconButton(onClick = navigateUp) {
+//                        Icon(
+//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                            contentDescription = stringResource(
+//                                id = R.string.back_button
+//                            )
+//                        )
+//                    }
+//                }
+//            },
             actions = {
 //                IconButton(onClick = { /* do something */ }) {
 //                    Icon(
@@ -225,18 +219,18 @@ fun AstAppTopAppBar(
                     ),
                 )
             },
-            navigationIcon = {
-                if (canNavigateBack) {
-                    IconButton(onClick = navigateUp) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(
-                                id = R.string.back_button
-                            )
-                        )
-                    }
-                }
-            },
+//            navigationIcon = {
+//                if (canNavigateBack) {
+//                    IconButton(onClick = navigateUp) {
+//                        Icon(
+//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                            contentDescription = stringResource(
+//                                id = R.string.back_button
+//                            )
+//                        )
+//                    }
+//                }
+//            },
             actions = {
                 IconButton(onClick = { /* do something */ }) {
                     Icon(
@@ -267,18 +261,18 @@ fun AstAppTopAppBar(
                     ),
                 )
             },
-            navigationIcon = {
-                if (canNavigateBack) {
-                    IconButton(onClick = navigateUp) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(
-                                id = R.string.back_button
-                            )
-                        )
-                    }
-                }
-            },
+//            navigationIcon = {
+//                if (canNavigateBack) {
+//                    IconButton(onClick = navigateUp) {
+//                        Icon(
+//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+//                            contentDescription = stringResource(
+//                                id = R.string.back_button
+//                            )
+//                        )
+//                    }
+//                }
+//            },
             actions = {
             }
         )

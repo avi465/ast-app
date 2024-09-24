@@ -113,7 +113,7 @@ fun OrWithDivider() {
 @Composable
 fun LiveLabel(modifier: Modifier){
     Surface(
-        color = Color.Red,
+        color = MaterialTheme.colorScheme.error,
         modifier = modifier
             .padding(16.dp),
         shape = RoundedCornerShape(4.dp)
@@ -126,12 +126,12 @@ fun LiveLabel(modifier: Modifier){
                 imageVector = Icons.Filled.Sensors,
                 contentDescription = "live",
                 modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.onPrimary
+                tint = MaterialTheme.colorScheme.onError
             )
             Text(
                 text = "LIVE",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.onError,
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
             )
         }

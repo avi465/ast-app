@@ -240,7 +240,6 @@ fun LiveClassCard(navController: NavController) {
                 .clickable {
                     navController.navigate(LiveClassScreen.LiveClassPlayer.route)
                 },
-            colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
             shape = RectangleShape
         ) {
             Box(
@@ -268,9 +267,7 @@ fun LiveClassCard(navController: NavController) {
 fun LiveClassCardDetails() {
     ListItem(
         modifier = Modifier.padding(bottom = 8.dp),
-        colors = ListItemDefaults.colors(
-            containerColor = Color.Transparent,
-        ),
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         leadingContent = {
             Icon(painter = painterResource(id = R.drawable.ic_google), contentDescription = "icon")
         },

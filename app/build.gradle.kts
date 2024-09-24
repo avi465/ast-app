@@ -98,5 +98,8 @@ dependencies {
     // SystemUi controller
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
 
-
+    // Datastore
+    implementation ("androidx.datastore:datastore-preferences:1.1.1")
+    // Ensure this matches your Compose version
+    implementation ("androidx.compose.runtime:runtime:1.7.1")
 }

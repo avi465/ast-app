@@ -204,7 +204,6 @@ fun LiveClassCard(navController: NavController) {
                     navController.navigate(LiveClassScreen.LiveClassPlayer.route)
                 }
                 .padding(horizontal = 16.dp),
-            colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
             shape = RoundedCornerShape(8.dp)
         ) {
             Box(
@@ -224,9 +223,7 @@ fun LiveClassCard(navController: NavController) {
             }
 
             ListItem(
-                colors = ListItemDefaults.colors(
-                    containerColor = Color.Transparent,
-                ),
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 overlineContent = { Text(text = "BANK/SSC/RAILWAY") },
                 headlineContent = { Text(text = "Surface Tension - Physics") },
                 supportingContent = { Text(text = "In this lecture we are going to learn about competitive exam pattern") },
@@ -311,7 +308,6 @@ fun RecommendedPager(navController: NavController) {
 fun Feedback() {
     Box(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(vertical = 32.dp)
             .fillMaxSize()
             .height(224.dp)
