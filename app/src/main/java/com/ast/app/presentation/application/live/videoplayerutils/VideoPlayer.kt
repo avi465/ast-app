@@ -28,9 +28,9 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,77 +47,10 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.delay
+import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
-
-//@Composable
-//fun VideoPlayer(modifier: Modifier = Modifier) {
-//
-//    val context = LocalContext.current
-//
-//    // player listener
-//    var totalDuration by remember { mutableStateOf(0L) }
-//    var currentTime by remember { mutableStateOf(0L) }
-//    var bufferedPercentage by remember { mutableStateOf(0) }
-//
-//    val exoPlayer = remember {
-//        ExoPlayer.Builder(context).build().apply {
-//            setMediaItem(
-//                MediaItem.fromUri(
-//                    "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
-//                )
-//            )
-//            prepare()
-//            playWhenReady = true
-//        }
-//    }
-//
-//    Box(modifier = Modifier) {
-//        DisposableEffect(key1 = Unit) {
-//            val listener =
-//                object : Player.Listener {
-//                    override fun onEvents(player: Player, events: Player.Events) {
-//                        super.onEvents(player, events)
-//                        totalDuration = player.duration.coerceAtLeast(0L)
-//                        currentTime = player.currentPosition.coerceAtLeast(0L)
-//                        bufferedPercentage = player.bufferedPercentage
-//                    }
-//                }
-//
-//            exoPlayer.addListener(listener)
-//
-//            onDispose {
-//                exoPlayer.removeListener(listener)
-//                exoPlayer.release()
-//            }
-//        }
-//    }
-//
-//    Box(modifier = modifier) {
-//        DisposableEffect(key1 = Unit) { onDispose { exoPlayer.release() } }
-//
-//        AndroidView(
-//            factory = {
-//                PlayerView(context).apply {
-//                    player = exoPlayer
-//                    useController = false
-//                    layoutParams =
-//                        FrameLayout.LayoutParams(
-//                            ViewGroup.LayoutParams.MATCH_PARENT,
-//                            ViewGroup.LayoutParams.MATCH_PARENT
-//                        )
-//                }
-//            }
-//        )
-//    }
-//
-//    PlayerControls(
-//        exoPlayer = exoPlayer,
-//        totalDuration = { totalDuration },
-//        currentTime = { currentTime },
-//        bufferPercentage = { bufferedPercentage }
-//    )
-//}
 
 @Composable
 fun VideoPlayer(
@@ -142,6 +75,10 @@ fun VideoPlayer(
         }
     }
 
+    var currentPosition by remember { mutableLongStateOf(0L) }
+    var duration by remember { mutableLongStateOf(0L) }
+    var isSeeking by remember { mutableStateOf(false) }
+
     DisposableEffect(Unit) {
         val listener = object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
@@ -149,6 +86,7 @@ fun VideoPlayer(
                     Player.STATE_READY -> {
                         isPlayerReady = true
                         isBuffering = false
+                        duration = exoPlayer.duration
                     }
 
                     Player.STATE_BUFFERING -> isBuffering = true
@@ -161,15 +99,24 @@ fun VideoPlayer(
         onDispose {
             exoPlayer.removeListener(listener)
             exoPlayer.release()
-            onPlayerReleased() // Notify that player is released
+            onPlayerReleased()
         }
     }
 
-    // Handle back press
+    // Update the current position during playback if not seeking
+    LaunchedEffect(Unit) {
+        while (true) {
+            if (!isSeeking) {
+                currentPosition = exoPlayer.currentPosition
+            }
+            delay(100) // Update every 100ms for smooth slider progress
+        }
+    }
+
     BackHandler {
-        exoPlayer.release() // Release the player immediately
-        onPlayerReleased() // Hide player
-        navController.popBackStack() // Navigate back
+        exoPlayer.release()
+        onPlayerReleased()
+        navController.popBackStack()
     }
 
     AndroidView(
@@ -252,19 +199,17 @@ fun VideoPlayer(
             ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // show total video time
                     Text(
-                        modifier = Modifier.padding(horizontal = 12.dp),
-                        text = "LIVE",
+                        text = "${formatDuration(currentPosition)} / ${formatDuration(duration)}",
                         style = MaterialTheme.typography.labelMedium,
                         color = Color.White
                     )
 
-                    // full screen toggle button
                     IconButton(
                         onClick = onFullScreenToggle,
                     ) {
@@ -276,64 +221,42 @@ fun VideoPlayer(
                     }
                 }
 
-                // seek bar
-                var value by remember { mutableFloatStateOf(.5f) }
-                var duration by remember { mutableLongStateOf(0L) }
-                var currentPosition by remember { mutableLongStateOf(0L) }
-
                 PlaybackSlider(
-                    value = value,
-                    onValueChange = { value = it },
-                    duration = duration,
-                    currentPosition = currentPosition
+                    value = if (duration > 0) currentPosition.toFloat() / duration else 0f,
+                    onValueChange = { value ->
+                        isSeeking = true
+                        currentPosition = (value * duration).toLong()
+                    },
+                    onSeek = { value ->
+                        isSeeking = false
+                        exoPlayer.seekTo((value * duration).toLong())
+                    }
                 )
             }
         }
     }
 }
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaybackSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
-    duration: Long,
-    currentPosition: Long
-) {
-    Box {
-        SliderBackground(
-            value = value,
-            onValueChange = onValueChange,
-            duration = duration,
-            currentPosition = currentPosition
-        )
-        SliderForeground(
-            value = value,
-            onValueChange = onValueChange,
-            duration = duration,
-            currentPosition = currentPosition
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SliderForeground(
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    duration: Long,
-    currentPosition: Long
+    onSeek: (Float) -> Unit
 ) {
     Slider(
         value = value,
         onValueChange = onValueChange,
+        onValueChangeFinished = {
+            onSeek(value) // Trigger seek action when the user finishes interaction
+        },
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .height(4.dp),
         thumb = {
             Box(
                 Modifier
-                    .size(16.dp)
-                    .padding(4.dp)
+                    .size(0.dp) // Match the track height
                     .background(Color.Red, CircleShape)
             )
         },
@@ -345,11 +268,14 @@ fun SliderForeground(
                 }
             }
 
-            Box(Modifier.fillMaxWidth()) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .background(Color.Gray)) {
                 Box(
                     Modifier
                         .fillMaxWidth(fraction)
-                        .height(2.dp)
+                        .height(4.dp) // Match the track height
                         .background(Color.Red)
                 )
             }
@@ -357,34 +283,9 @@ fun SliderForeground(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SliderBackground(
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    duration: Long,
-    currentPosition: Long
-) {
-    Slider(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth(),
-        thumb = {
-            Box(
-                Modifier
-                    .size(16.dp)
-            )
-        },
-        track = {
-            Box(Modifier.fillMaxWidth()) {
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(2.dp)
-                        .background(Color.Gray)
-                )
-            }
-        }
-    )
+fun formatDuration(duration: Long): String {
+    val totalSeconds = duration / 1000
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
 }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -65,39 +66,6 @@ import com.ast.app.presentation.application.live.videoplayerutils.VideoPlayer
 //    }
 //}
 
-//@Composable
-//fun VideoPlayerScreen(navController: NavController) {
-//    var isPlayerVisible by remember { mutableStateOf(true) } // To control player visibility
-//
-//    if (isPlayerVisible) {
-//        VideoPlayer(
-//            navController = navController,
-//            url = "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8",
-//            onPlayerReleased = { isPlayerVisible = false } // Hide player when released
-//        )
-//    }
-//}
-
-
-//@RequiresApi(Build.VERSION_CODES.R)
-//@Composable
-//fun VideoPlayerScreen(navController: NavController) {
-//    var isPlayerVisible by remember { mutableStateOf(true) } // Controls player visibility
-//
-//    AnimatedVisibility(
-//        visible = isPlayerVisible,
-//        enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
-//        exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
-//    ) {
-//        VideoPlayer(
-////            navController = navController,
-//            url = "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8",
-//            thumbnailUrl = "https://i.ytimg.com/vi/kV8Hu54zhbA/hq720.jpg?sqp=-…BACGAY4AUAB&rs=AOn4CLDXjujrshQrHWpE_PZA9Ohc-zSLsQ",
-//            onPlayerReleased = { isPlayerVisible = false } // Hide player on release
-//        )
-//    }
-//}
-
 
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
@@ -130,7 +98,9 @@ fun VideoPlayerScreen(navController: NavHostController) {
 
     if (isPlayerVisible) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (isFullScreen) {
                 Box(
@@ -218,7 +188,6 @@ fun VideoPlayerScreenChat() {
         items(itemCount) {
             Text(
                 text = "Avinash: Hey, what's going on!",
-                style = MaterialTheme.typography.bodySmall
             )
         }
     }
