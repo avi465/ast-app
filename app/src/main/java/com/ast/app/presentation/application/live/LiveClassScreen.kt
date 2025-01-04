@@ -238,7 +238,9 @@ fun LiveClassCard(navController: NavController) {
         ElevatedCard(
             Modifier
                 .clickable {
-                    navController.navigate(LiveClassScreen.LiveClassPlayer.route)
+                    navController.navigate(LiveClassScreen.LiveClassPlayer.route){
+                        launchSingleTop = true
+                    }
                 },
             shape = RectangleShape
         ) {

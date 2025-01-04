@@ -32,12 +32,13 @@ class EmailLoginViewModel : ViewModel() {
                     _uiState.value = UiState.Success(response)
                     // Handle successful login (e.g., store token, navigate to home screen)
                     navController.navigate(Graph.MAIN_SCREEN_PAGE) {
-                        popUpTo(Graph.AUTHENTICATION) {
+                        popUpTo(Graph.MAIN_SCREEN_PAGE) {
                             inclusive = true
                         }
                     }
                     // Remember login using shared prefs
                     storeCredentials(username, password, context)
+                    // todo: do manage login state in app
                 } else {
                     _uiState.value = UiState.Error("Login failed")
                 }

@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -72,8 +74,7 @@ fun CartScreen(navController: NavController, paymentViewModel: PaymentViewModel 
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
-                    .height(dimensionResource(id = R.dimen.button_height)),
-                shape = RoundedCornerShape(8.dp)
+                    .height(dimensionResource(id = R.dimen.button_height))
             ) {
                 Text(text = "Proceed to Checkout")
                 paymentResult?.let {
@@ -134,7 +135,7 @@ fun CartScreenCard() {
     val price = 10000
     val discount = 10
 
-    Column {
+    Column{
         ListItem(
             overlineContent = { Text("GATE") },
             headlineContent = {

@@ -15,7 +15,7 @@ import com.ast.app.presentation.auth.SplashScreen
 import com.ast.app.presentation.auth.VerifyOtpScreen
 import com.ast.app.presentation.auth.VerifyPasswordResetScreen
 
-fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
+fun NavGraphBuilder.authNavGraph(rootNavController: NavHostController) {
     navigation(
         route = Graph.AUTHENTICATION,
         startDestination = AuthScreen.Splash.route
@@ -23,45 +23,45 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 
         composable(route = AuthScreen.Splash.route) {
             SplashScreen(
-                navController = navController
+                rootNavController = rootNavController
             )
         }
         composable(route = AuthScreen.PhoneLogin.route) {
             PhoneLoginScreen(
-                navController = navController
+                rootNavController = rootNavController
             )
         }
 
         composable(route = AuthScreen.EmailLogin.route) {
             EmailLoginScreen(
-                navController = navController
+                rootNavController = rootNavController
             )
         }
 
         composable(route = AuthScreen.Signup.route) {
             SignupScreen(
-                navController = navController
+                rootNavController = rootNavController
             )
         }
 
         composable(route = AuthScreen.VerifyOtp.route) {
             VerifyOtpScreen(
-                navController = navController
+                rootNavController = rootNavController
             )
         }
 
         composable(route = AuthScreen.PasswordReset.route) {
             PasswordResetScreen(
-                navController = navController,
+                rootNavController = rootNavController,
                 onPasswordResetSendButtonClicked = {
-                    navController.navigate(AuthScreen.VerifyPasswordReset.route)
+                    rootNavController.navigate(AuthScreen.VerifyPasswordReset.route)
                 }
             )
         }
 
         composable(route = AuthScreen.VerifyPasswordReset.route) {
             VerifyPasswordResetScreen(
-                navController = navController
+                rootNavController = rootNavController
             )
         }
     }

@@ -35,7 +35,7 @@ fun AuthScreenButton(text: String, onClick: () -> Unit, isLoading: Boolean) {
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(16.dp),
-                    color = LocalContentColor.current,
+//                    color = LocalContentColor.current,
                     strokeWidth = 2f.dp,
                     strokeCap = StrokeCap.Round,
                 )

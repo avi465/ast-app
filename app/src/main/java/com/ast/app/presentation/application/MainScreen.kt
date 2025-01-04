@@ -11,7 +11,10 @@ import com.ast.app.navigation.AstAppTopAppBar
 import com.ast.app.navigation.AstBottomNavBar
 
 @Composable
-fun MainScreen(navController: NavHostController = rememberNavController()) {
+fun MainScreen(
+    rootNavController: NavHostController,
+    navController: NavHostController = rememberNavController()
+) {
     Scaffold(
         topBar = {
             AstAppTopAppBar(
@@ -26,6 +29,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
     ) { innerPadding ->
         MainNavGraph(
             modifier = Modifier.padding(innerPadding),
+            rootNavController = rootNavController,
             navController = navController
         )
     }

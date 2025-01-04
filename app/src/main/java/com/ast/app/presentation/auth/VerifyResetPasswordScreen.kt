@@ -29,13 +29,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
 
 @Composable
 fun VerifyPasswordResetScreen(
-    navController: NavController
+    rootNavController: NavHostController
 ) {
     var otp by rememberSaveable {
         mutableStateOf("")
@@ -47,8 +48,8 @@ fun VerifyPasswordResetScreen(
         topBar = {
             OnBoardTopAppBar(
                 currentScreenTitle = AuthScreen.VerifyPasswordReset.title,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() },
+                canNavigateBack = rootNavController.previousBackStackEntry != null,
+                navigateUp = { rootNavController.navigateUp() },
             )
         }
     ) {

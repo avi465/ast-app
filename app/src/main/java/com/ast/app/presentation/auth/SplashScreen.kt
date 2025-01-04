@@ -9,6 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.PhoneIphone
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.PhoneAndroid
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -18,34 +28,29 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
-import com.ast.app.navigation.OnBoardTopAppBar
-import com.ast.app.presentation.common.PrivacyPolicy
 
 @Composable
 fun SplashScreen(
-    navController: NavController
+    rootNavController: NavHostController
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {
-            OnBoardTopAppBar(
-                currentScreenTitle = AuthScreen.Splash.title,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() },
-            )
-        }
     ) {
         Column(
             modifier = Modifier
@@ -58,10 +63,11 @@ fun SplashScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background),
+                    .background(Color.White),
             ) {
                 Image(
-                    imageVector = ImageVector.vectorResource(R.drawable.auth_splash),
+//                    imageVector = ImageVector.vectorResource(R.drawable.auth_splash),
+                    painter = painterResource(id = R.drawable._6),
                     contentDescription = null, contentScale = ContentScale.Fit
                 )
             }
@@ -75,24 +81,80 @@ fun SplashScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom,
             ) {
+                // continue with phone button
                 OutlinedButton(
                     onClick = {
-                        navController.navigate(AuthScreen.Signup.route)
+                        rootNavController.navigate(AuthScreen.PhoneLogin.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(dimensionResource(id = R.dimen.button_height))
                 ) {
-                    Text(
-                        text = "Get Started", style = MaterialTheme.typography.titleMedium
+                    Icon(
+                        imageVector = Icons.Filled.PhoneIphone,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
                     )
+//                    Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "Continue with Phone", style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
                 }
 
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_s)))
 
+                // login with email button
+                OutlinedButton(
+                    onClick = {
+                        rootNavController.navigate(AuthScreen.EmailLogin.route)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = R.dimen.button_height))
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Email,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "Log in with Email", style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_s)))
+
+                // continue with google button
+                OutlinedButton(
+                    onClick = {
+                        // navController.navigate(AuthScreen.GoogleLogin.route)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = R.dimen.button_height))
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_google),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "Continue with Google", style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_s)))
+
+                // don't have an account button
                 TextButton(
                     onClick = {
-                        navController.navigate(AuthScreen.PhoneLogin.route)
+                        rootNavController.navigate(AuthScreen.Signup.route)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -100,10 +162,10 @@ fun SplashScreen(
                 ) {
                     val loginText = buildAnnotatedString {
                         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
-                            append("Already have an account? ")
+                            append("Don't have an account? ")
                         }
                         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                            append(" Log in")
+                            append(" Signup")
                         }
                     }
                     Text(
@@ -114,7 +176,7 @@ fun SplashScreen(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_l)))
 
                 // privacy policies text component
-                PrivacyPolicy()
+//                 PrivacyPolicy()
             }
         }
     }
@@ -124,6 +186,6 @@ fun SplashScreen(
 @Composable
 fun SplashScreenPreview() {
     SplashScreen(
-        navController = rememberNavController()
+        rootNavController = rememberNavController()
     )
 }

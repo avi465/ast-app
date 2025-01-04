@@ -272,21 +272,21 @@ fun AdvancedStudyTutorialsTheme(
     val preferencesDataStore = PreferencesDataStore(context)
 
     // Observe both dark theme and dynamic color settings
-    val darkTheme by preferencesDataStore.darkThemeFlow.collectAsState(initial = false)
-    val dynamicColor by preferencesDataStore.dynamicColorFlow.collectAsState(initial = false)
+    val darkTheme by preferencesDataStore.darkThemeFlow.collectAsState(initial = null)
+    val dynamicColor by preferencesDataStore.dynamicColorFlow.collectAsState(initial = null)
 
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        dynamicColor == true && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            if (darkTheme == true) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> darkScheme
+        darkTheme == true -> darkScheme
         else -> lightScheme
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            setUpEdgeToEdge(view, darkTheme)
+            darkTheme?.let { setUpEdgeToEdge(view, it) }
         }
     }
 

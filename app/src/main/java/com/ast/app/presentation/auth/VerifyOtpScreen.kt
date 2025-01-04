@@ -52,6 +52,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
@@ -64,7 +65,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun VerifyOtpScreen(
     verifyOtpViewModel: VerifyOtpViewModel = viewModel(),
-    navController: NavController
+    rootNavController: NavHostController
 ) {
     val uiState by verifyOtpViewModel.uiState.collectAsState()
 
@@ -86,8 +87,8 @@ fun VerifyOtpScreen(
         topBar = {
             OnBoardTopAppBar(
                 currentScreenTitle = AuthScreen.VerifyOtp.title,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() },
+                canNavigateBack = rootNavController.previousBackStackEntry != null,
+                navigateUp = { rootNavController.navigateUp() },
             )
         },
         snackbarHost = {
@@ -158,7 +159,7 @@ fun VerifyOtpScreen(
 
                 ResendOtpCountdown(
                     phone = phone,
-                    navController = navController,
+                    navController = rootNavController,
                     snackbarHostState = snackbarHostState,
                     scope = scope
                 )
@@ -187,7 +188,7 @@ fun VerifyOtpScreen(
                                     verifyOtpViewModel.onVerifyPhoneOtpButtonClicked(
                                         phone,
                                         otp,
-                                        navController
+                                        rootNavController
                                     )
                                 }
                             },
@@ -206,7 +207,7 @@ fun VerifyOtpScreen(
                                     verifyOtpViewModel.onVerifyPhoneOtpButtonClicked(
                                         phone,
                                         otp,
-                                        navController
+                                        rootNavController
                                     )
                                 }
                             },
@@ -225,7 +226,7 @@ fun VerifyOtpScreen(
                                     verifyOtpViewModel.onVerifyPhoneOtpButtonClicked(
                                         phone,
                                         otp,
-                                        navController
+                                        rootNavController
                                     )
                                 }
                             },

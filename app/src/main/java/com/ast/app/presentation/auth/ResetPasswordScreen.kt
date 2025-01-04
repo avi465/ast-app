@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
@@ -36,7 +37,7 @@ import com.ast.app.navigation.OnBoardTopAppBar
 @Composable
 fun PasswordResetScreen(
     onPasswordResetSendButtonClicked: () -> Unit,
-    navController: NavController
+    rootNavController: NavHostController
 ) {
     var email by rememberSaveable {
         mutableStateOf("")
@@ -47,8 +48,8 @@ fun PasswordResetScreen(
         topBar = {
             OnBoardTopAppBar(
                 currentScreenTitle = AuthScreen.PasswordReset.title,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() },
+                canNavigateBack = rootNavController.previousBackStackEntry != null,
+                navigateUp = { rootNavController.navigateUp() },
             )
         }
     ) {

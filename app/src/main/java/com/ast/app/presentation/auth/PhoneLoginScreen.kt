@@ -1,23 +1,19 @@
 package com.ast.app.presentation.auth
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.rounded.PhoneIphone
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -36,20 +32,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
 import com.ast.app.presentation.common.AuthScreenButton
-import com.ast.app.presentation.common.OrWithDivider
-import com.ast.app.presentation.common.PrivacyPolicy
 import com.ast.app.presentation.state.UiState
 import kotlinx.coroutines.launch
 
@@ -58,7 +49,7 @@ var enteredPhoneNumber = ""
 @Composable
 fun PhoneLoginScreen(
     phoneLoginViewModel: PhoneLoginViewModel = viewModel(),
-    navController: NavController
+    rootNavController: NavHostController
 ) {
     val uiState by phoneLoginViewModel.uiState.collectAsState()
 
@@ -77,8 +68,8 @@ fun PhoneLoginScreen(
         topBar = {
             OnBoardTopAppBar(
                 currentScreenTitle = AuthScreen.PhoneLogin.title,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() },
+                canNavigateBack = rootNavController.previousBackStackEntry != null,
+                navigateUp = { rootNavController.navigateUp() },
             )
         },
         snackbarHost = {
@@ -109,26 +100,11 @@ fun PhoneLoginScreen(
                         phone = it
                         isPhoneFieldValid = phone.isNotBlank()
                     },
-                    prefix = {
-                        Text(
-                            text = "+91",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    },
                     leadingIcon = {
-                        IconButton(
-                            onClick = { /*TODO*/ },
-                            modifier = Modifier
-                                .padding(start = 4.dp, end = 4.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.india_flag_icon),
-                                contentDescription = null,
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .padding(start = 4.dp, end = 4.dp)
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Rounded.PhoneIphone,
+                            contentDescription = "phone number"
+                        )
                     },
                     trailingIcon = {
                         if (!isPhoneFieldValid) {
@@ -163,56 +139,6 @@ fun PhoneLoginScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                //OrWithDivider component
-                OrWithDivider()
-
-                OutlinedButton(
-                    onClick = {
-                        navController.navigate(AuthScreen.EmailLogin.route)
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.button_height))
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Email,
-                        contentDescription = null,
-                        modifier = Modifier
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = "Log in with E-mail", style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-
-                // for login with google
-                OutlinedButton(
-                    onClick = { /*TODO*/ },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.onBackground
-                    ),
-                    enabled = false,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.button_height))
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_google),
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = "Log in with Google", style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-
                 Spacer(modifier = Modifier.weight(1f))
 
                 when (uiState) {
@@ -237,7 +163,7 @@ fun PhoneLoginScreen(
                                     enteredPhoneNumber = phone
                                     phoneLoginViewModel.onGetPhoneOtpButtonClicked(
                                         phone,
-                                        navController
+                                        rootNavController
                                     )
                                 }
                             },
@@ -247,7 +173,7 @@ fun PhoneLoginScreen(
 
                     UiState.Initial -> {
                         AuthScreenButton(
-                            text = "Send OTP",
+                            text = "Get OTP",
                             onClick = {
                                 if (phone.isBlank()) {
                                     isPhoneFieldValid = false
@@ -256,7 +182,7 @@ fun PhoneLoginScreen(
                                     enteredPhoneNumber = phone
                                     phoneLoginViewModel.onGetPhoneOtpButtonClicked(
                                         phone,
-                                        navController
+                                        rootNavController
                                     )
                                 }
                             },
@@ -275,7 +201,7 @@ fun PhoneLoginScreen(
                                     enteredPhoneNumber = phone
                                     phoneLoginViewModel.onGetPhoneOtpButtonClicked(
                                         phone,
-                                        navController
+                                        rootNavController
                                     )
                                 }
                             },
@@ -286,8 +212,6 @@ fun PhoneLoginScreen(
                     is UiState.Success -> {
                     }
                 }
-
-                PrivacyPolicy()
             }
         }
     }

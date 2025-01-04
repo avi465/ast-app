@@ -312,16 +312,6 @@ fun Feedback() {
             .fillMaxSize()
             .height(224.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.thanks_feedback),
-            contentDescription = "feedback_banner",
-            Modifier
-                .height(148.dp)
-                .align(
-                    Alignment.BottomEnd
-                ),
-            contentScale = ContentScale.Fit,
-        )
         Column(
             modifier = Modifier
                 .align(Alignment.TopStart)

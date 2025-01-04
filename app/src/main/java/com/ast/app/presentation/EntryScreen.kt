@@ -24,14 +24,15 @@ import com.ast.app.presentation.common.DotsTyping
 
 @Composable
 fun EntryScreen(
-    navController: NavHostController
+    rootNavController: NavHostController
 ) {
     val (username, password, rememberMe) = getStoredCredentials(LocalContext.current)
 
     if (rememberMe) {
-        MainScreen()
+        // todo: reimplement this with server based session management
+        MainScreen(rootNavController = rootNavController)
     } else {
-        SplashScreen(navController = navController)
+        SplashScreen(rootNavController = rootNavController)
     }
 }
 

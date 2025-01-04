@@ -9,20 +9,19 @@ import com.ast.app.presentation.application.MainScreen
 
 @Composable
 fun RootNavigationGraph() {
-    val navController = rememberNavController()
+    val rootNavController = rememberNavController()
 
     NavHost(
-        navController = navController,
+        navController = rootNavController,
         route = Graph.ROOT,
-//        startDestination = Graph.AUTHENTICATION
         startDestination = Screen.ENTRY
     ) {
         composable(route = Screen.ENTRY){
-            EntryScreen(navController = navController)
+            EntryScreen(rootNavController = rootNavController)
         }
-        authNavGraph(navController = navController)
+        authNavGraph(rootNavController = rootNavController)
         composable(route = Graph.MAIN_SCREEN_PAGE) {
-            MainScreen()
+            MainScreen(rootNavController = rootNavController)
         }
     }
 }

@@ -18,13 +18,18 @@ import com.ast.app.presentation.application.shop.cart.CartScreen
 import com.ast.app.presentation.common.EmptyScreen
 
 @Composable
-fun MainNavGraph(modifier: Modifier, navController: NavHostController) {
+fun MainNavGraph(
+    modifier: Modifier,
+    rootNavController: NavHostController,
+    navController: NavHostController
+) {
     NavHost(
         modifier = modifier,
         navController = navController,
         route = Graph.MAIN_SCREEN_PAGE,
         startDestination = TopLevelDestination.Home.route
     ) {
+
         composable(route = TopLevelDestination.Home.route) {
             HomeScreen(navController = navController)
         }
@@ -45,6 +50,7 @@ fun MainNavGraph(modifier: Modifier, navController: NavHostController) {
         }
         composable(route = TopLevelDestination.Settings.route) {
             SettingsScreen(
+                rootNavController = rootNavController,
                 navController = navController
             )
         }

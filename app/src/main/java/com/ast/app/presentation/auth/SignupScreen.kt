@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
 import com.ast.app.navigation.OnBoardTopAppBar
@@ -52,7 +53,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignupScreen(
     signupViewModel: SignupViewModel = viewModel(),
-    navController: NavController
+    rootNavController: NavHostController
 ) {
     val uiState by signupViewModel.uiState.collectAsState()
 
@@ -84,8 +85,8 @@ fun SignupScreen(
         topBar = {
             OnBoardTopAppBar(
                 currentScreenTitle = AuthScreen.Signup.title,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() },
+                canNavigateBack = rootNavController.previousBackStackEntry != null,
+                navigateUp = { rootNavController.navigateUp() },
             )
         },
         snackbarHost = {
@@ -280,7 +281,7 @@ fun SignupScreen(
                                         name,
                                         email,
                                         password,
-                                        navController
+                                        rootNavController
                                     )
                                 }
                             },
@@ -306,7 +307,7 @@ fun SignupScreen(
                                         name,
                                         email,
                                         password,
-                                        navController
+                                        rootNavController
                                     )
                                 }
                             },
@@ -332,7 +333,7 @@ fun SignupScreen(
                                         name,
                                         email,
                                         password,
-                                        navController
+                                        rootNavController
                                     )
                                 }
                             },

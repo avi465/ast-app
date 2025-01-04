@@ -30,6 +30,7 @@ class VerifyOtpViewModel : ViewModel() {
                             inclusive = true
                         }
                     }
+                    // todo: do manage login state in app
                 } else {
                     _uiState.value = UiState.Error("Can't verify otp")
                 }

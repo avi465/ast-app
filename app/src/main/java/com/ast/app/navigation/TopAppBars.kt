@@ -132,7 +132,7 @@ fun AstAppTopAppBar(
             modifier = modifier.shadow(elevation = 2.dp),
             title = {
                 Text(
-                    text = "Store",
+                    text = "Shop",
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Medium
