@@ -1,6 +1,13 @@
 package com.ast.app.presentation.application.live.videoplayerutils
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
+import android.os.Build
+import android.view.ViewGroup
+import android.view.WindowInsets
+import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +27,7 @@ import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay10
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,9 +50,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
@@ -52,8 +65,11 @@ import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
 
+@androidx.annotation.OptIn(UnstableApi::class)
+@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun VideoPlayer(
+    modifier: Modifier,
     navController: NavHostController,
     url: String,
     isFullScreen: Boolean,
@@ -62,10 +78,15 @@ fun VideoPlayer(
 ) {
     var isPlaying by remember { mutableStateOf(true) }
     var showControls by remember { mutableStateOf(true) }
-
     val context = LocalContext.current
+    val activity = context as? Activity
     var isPlayerReady by remember { mutableStateOf(false) }
     var isBuffering by remember { mutableStateOf(true) }
+
+    var currentPosition by remember { mutableLongStateOf(0L) }
+    var duration by remember { mutableLongStateOf(0L) }
+    var isSeeking by remember { mutableStateOf(false) }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
@@ -74,10 +95,6 @@ fun VideoPlayer(
             playWhenReady = true
         }
     }
-
-    var currentPosition by remember { mutableLongStateOf(0L) }
-    var duration by remember { mutableLongStateOf(0L) }
-    var isSeeking by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit) {
         val listener = object : Player.Listener {
@@ -103,6 +120,32 @@ fun VideoPlayer(
         }
     }
 
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_STOP -> {
+                    // App is in background or screen is off
+                    exoPlayer.pause()
+                    isPlaying = false
+                }
+
+                Lifecycle.Event.ON_RESUME -> {
+                    // Optional: resume playing
+                    // exoPlayer.play()
+                    // isPlaying = true
+                }
+
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     // Update the current position during playback if not seeking
     LaunchedEffect(Unit) {
         while (true) {
@@ -114,13 +157,22 @@ fun VideoPlayer(
     }
 
     BackHandler {
-        exoPlayer.release()
-        onPlayerReleased()
-        navController.popBackStack()
+        if (isFullScreen) {
+            activity?.window?.insetsController?.apply {
+                show(WindowInsets.Type.systemBars()) // Show status and navigation bars
+            }
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+
+            onFullScreenToggle()
+        } else {
+            exoPlayer.release()
+            onPlayerReleased()
+            navController.popBackStack()
+        }
     }
 
     AndroidView(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .pointerInput(Unit) {
                 detectTapGestures(
@@ -131,15 +183,26 @@ fun VideoPlayer(
             PlayerView(context).apply {
                 player = exoPlayer
                 useController = false
+                resizeMode =
+                    AspectRatioFrameLayout.RESIZE_MODE_FIT // Keeps aspect ratio, fits inside container
+                layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
             }
         }
     )
 
     if (showControls) {
+        LaunchedEffect(Unit) {
+            delay(2000L)
+            showControls = false
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
         ) {
             Column(
                 modifier = Modifier.align(Alignment.Center)
@@ -159,20 +222,28 @@ fun VideoPlayer(
                         )
                     }
 
-                    IconButton(onClick = {
-                        if (isPlaying) {
-                            exoPlayer.pause()
-                        } else {
-                            exoPlayer.play()
-                        }
-                        isPlaying = !isPlaying
-                    }) {
-                        Icon(
-                            imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = null,
+                    if (isBuffering) {
+                        CircularProgressIndicator(
                             modifier = Modifier.size(48.dp),
-                            tint = Color.White
+                            color = Color.White,
+                            strokeWidth = 4.dp
                         )
+                    } else {
+                        IconButton(onClick = {
+                            if (isPlaying) {
+                                exoPlayer.pause()
+                            } else {
+                                exoPlayer.play()
+                            }
+                            isPlaying = !isPlaying
+                        }) {
+                            Icon(
+                                imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = Color.White
+                            )
+                        }
                     }
 
                     IconButton(onClick = {
@@ -200,7 +271,7 @@ fun VideoPlayer(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp),
+                        .padding(horizontal = if (isFullScreen) 36.dp else 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -221,17 +292,25 @@ fun VideoPlayer(
                     }
                 }
 
-                PlaybackSlider(
-                    value = if (duration > 0) currentPosition.toFloat() / duration else 0f,
-                    onValueChange = { value ->
-                        isSeeking = true
-                        currentPosition = (value * duration).toLong()
-                    },
-                    onSeek = { value ->
-                        isSeeking = false
-                        exoPlayer.seekTo((value * duration).toLong())
-                    }
-                )
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = if (isFullScreen) 36.dp else 0.dp)
+                        .padding(bottom = if (isFullScreen) 36.dp else 0.dp)
+                ) {
+
+                    PlaybackSlider(
+                        isFullScreen = isFullScreen,
+                        value = if (duration > 0) currentPosition.toFloat() / duration else 0f,
+                        onValueChange = { value ->
+                            isSeeking = true
+                            currentPosition = (value * duration).toLong()
+                        },
+                        onSeek = { value ->
+                            isSeeking = false
+                            exoPlayer.seekTo((value * duration).toLong())
+                        }
+                    )
+                }
             }
         }
     }
@@ -240,6 +319,7 @@ fun VideoPlayer(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaybackSlider(
+    isFullScreen: Boolean,
     value: Float,
     onValueChange: (Float) -> Unit,
     onSeek: (Float) -> Unit
@@ -271,7 +351,8 @@ fun PlaybackSlider(
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .background(Color.Gray)) {
+                    .background(Color.Gray)
+            ) {
                 Box(
                     Modifier
                         .fillMaxWidth(fraction)

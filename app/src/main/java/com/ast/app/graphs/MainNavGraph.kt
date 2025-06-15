@@ -1,5 +1,6 @@
 package com.ast.app.graphs
 
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -8,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.ast.app.navigation.TopLevelDestination
+import com.ast.app.presentation.application.course.MyCourseDetailsScreen
 import com.ast.app.presentation.application.course.MyCourseScreen
 import com.ast.app.presentation.application.home.HomeScreen
 import com.ast.app.presentation.application.live.LiveClassScreen
@@ -15,7 +17,7 @@ import com.ast.app.presentation.application.live.VideoPlayerScreen
 import com.ast.app.presentation.application.profile.SettingsScreen
 import com.ast.app.presentation.application.shop.ShopScreen
 import com.ast.app.presentation.application.shop.cart.CartScreen
-import com.ast.app.presentation.common.EmptyScreen
+import com.ast.app.presentation.application.shop.course.details.CourseScreen
 
 @Composable
 fun MainNavGraph(
@@ -55,25 +57,33 @@ fun MainNavGraph(
             )
         }
         liveClassNavGraph(navController = navController)
-        detailsNavGraph(navController = navController)
+        myCourseDetailsNavGraph(navController = navController)
+        courseDetailsNavGraph(navController = navController)
         cartNavGraph(navController = navController)
     }
 }
 
-fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
+fun NavGraphBuilder.myCourseDetailsNavGraph(navController: NavHostController) {
     navigation(
-        route = Graph.DETAILS,
-        startDestination = DetailsScreen.BTM_DETAIL_PAGE.route
+        route = Graph.MY_COURSE_DETAILS,
+        startDestination = MyCourseDetailsScreen.MyCourseDetails.route
     ) {
-        composable(route = DetailsScreen.BTM_DETAIL_PAGE.route) {
-//            ScreenContent(name = "Detail Page") {
-//                navController.navigate(DetailsScreen.BTM_SUB_DETAILS_PAGE.route)
-//            }
-            EmptyScreen()
+        composable(route = MyCourseDetailsScreen.MyCourseDetails.route + "/{courseId}") { backStackEntry ->
+            val courseId = backStackEntry.arguments?.getString("courseId")
+            MyCourseDetailsScreen(navController = navController, courseId = courseId ?: "")
         }
-        composable(route = DetailsScreen.BTM_SUB_DETAILS_PAGE.route) {
-//            ScreenContent(name = "Sub Detail Page") {}
-            EmptyScreen()
+    }
+
+}
+
+fun NavGraphBuilder.courseDetailsNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.COURSE_DETAILS,
+        startDestination = CourseDetailsScreen.CourseDetails.route
+    ) {
+        composable(route = CourseDetailsScreen.CourseDetails.route + "/{courseId}") { backStackEntry ->
+            val courseId = backStackEntry.arguments?.getString("courseId")
+            CourseScreen(navController = navController, courseId = courseId ?: "")
         }
     }
 }
@@ -84,7 +94,9 @@ fun NavGraphBuilder.liveClassNavGraph(navController: NavHostController) {
         startDestination = LiveClassScreen.LiveClassPlayer.route
     ) {
         composable(route = LiveClassScreen.LiveClassPlayer.route) {
-            VideoPlayerScreen(navController = navController)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                VideoPlayerScreen(navController = navController)
+            }
         }
     }
 }
@@ -100,9 +112,13 @@ fun NavGraphBuilder.cartNavGraph(navController: NavHostController) {
     }
 }
 
-sealed class DetailsScreen(val route: String) {
-    object BTM_DETAIL_PAGE : DetailsScreen(route = "DETAIL_PAGE_")
-    object BTM_SUB_DETAILS_PAGE : DetailsScreen(route = "DETAIL_PAGE_SUB")
+sealed class MyCourseDetailsScreen(val route: String) {
+    object MyCourseDetails : MyCourseDetailsScreen(route = "my_course_details")
+}
+
+sealed class CourseDetailsScreen(val route: String) {
+    object CourseDetails : CourseDetailsScreen(route = "course_details")
+    object PaymentStatus : CourseDetailsScreen(route = "payment_status")
 }
 
 sealed class LiveClassScreen(val route: String) {

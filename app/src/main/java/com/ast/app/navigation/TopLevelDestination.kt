@@ -1,48 +1,33 @@
 package com.ast.app.navigation
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Draw
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.ImportContacts
 import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.ShoppingBag
-import androidx.compose.material.icons.rounded.AccountCircle
-import androidx.compose.material.icons.rounded.Draw
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.ImportContacts
 import androidx.compose.material.icons.rounded.Sensors
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.ShoppingBag
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemColors
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import kotlinx.coroutines.launch
 
 sealed class TopLevelDestination(
     val route: String,
@@ -92,19 +77,16 @@ sealed class TopLevelDestination(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AstBottomNavBar(navController: NavHostController) {
-    // changing the navigation bar color to match the bottom navigation bar
     // Get access to the current Activity's window
     val window = (LocalView.current.context as? Activity)?.window
-    val color = colorScheme.surfaceContainer.toArgb()
-    // Ensure it pre-composed before LaunchedEffect Load
+    val color = colorScheme.surfaceContainer.toArgb() // You can customize this color as needed
     window?.navigationBarColor = color
-    // Update the navigation bar color using LaunchedEffect
-    LaunchedEffect(colorScheme) {
-        launch {
-            window?.navigationBarColor = color
+    // Ensure the navigation bar and status bar colors are updated immediately
+    SideEffect {
+        window?.apply {
+            navigationBarColor = color
         }
     }
 

@@ -13,7 +13,6 @@ import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Password
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +39,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.ast.app.R
 import com.ast.app.graphs.AuthScreen
@@ -101,57 +99,57 @@ fun SignupScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                OutlinedTextField(
-                    label = {
-                        Text(
-                            text = "Enter your full name*",
-                        )
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next
-                    ),
-                    value = name,
-                    onValueChange = {
-                        name = it
-                        isNameFieldValid = name.isNotBlank()
-                    },
-                    leadingIcon = {
-                        Icon(imageVector = Icons.Outlined.Person, contentDescription = null)
-                    },
-                    trailingIcon = {
-                        if (!isNameFieldValid) {
-                            Icon(
-                                imageVector = Icons.Outlined.ErrorOutline,
-                                contentDescription = "error"
-                            )
-                        } else if (name.isNotEmpty()) {
-                            IconButton(
-                                onClick = {
-                                    name = ""
-                                },
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Cancel,
-                                    contentDescription = "cancel",
-                                )
-                            }
-                        }
-                    },
-                    isError = !isNameFieldValid,
-                    supportingText = {
-                        if (!isNameFieldValid) {
-                            Text(
-                                text = "Name can't be blank",
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        } else {
-                            Text(text = "*required")
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+//                OutlinedTextField(
+//                    label = {
+//                        Text(
+//                            text = "Enter your full name*",
+//                        )
+//                    },
+//                    singleLine = true,
+//                    keyboardOptions = KeyboardOptions.Default.copy(
+//                        keyboardType = KeyboardType.Text,
+//                        imeAction = ImeAction.Next
+//                    ),
+//                    value = name,
+//                    onValueChange = {
+//                        name = it
+//                        isNameFieldValid = name.isNotBlank()
+//                    },
+//                    leadingIcon = {
+//                        Icon(imageVector = Icons.Outlined.Person, contentDescription = null)
+//                    },
+//                    trailingIcon = {
+//                        if (!isNameFieldValid) {
+//                            Icon(
+//                                imageVector = Icons.Outlined.ErrorOutline,
+//                                contentDescription = "error"
+//                            )
+//                        } else if (name.isNotEmpty()) {
+//                            IconButton(
+//                                onClick = {
+//                                    name = ""
+//                                },
+//                            ) {
+//                                Icon(
+//                                    imageVector = Icons.Outlined.Cancel,
+//                                    contentDescription = "cancel",
+//                                )
+//                            }
+//                        }
+//                    },
+//                    isError = !isNameFieldValid,
+//                    supportingText = {
+//                        if (!isNameFieldValid) {
+//                            Text(
+//                                text = "Name can't be blank",
+//                                color = MaterialTheme.colorScheme.error
+//                            )
+//                        } else {
+//                            Text(text = "*required")
+//                        }
+//                    },
+//                    modifier = Modifier.fillMaxWidth()
+//                )
                 OutlinedTextField(
                     label = {
                         Text(

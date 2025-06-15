@@ -3,12 +3,6 @@ package com.ast.app.navigation
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material.icons.outlined.NotificationsActive
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.ShoppingCart
-import androidx.compose.material.icons.outlined.ShoppingCartCheckout
-import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,6 +22,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ast.app.R
 import com.ast.app.graphs.CartScreen
+import com.ast.app.graphs.CourseDetailsScreen
+import com.ast.app.graphs.MyCourseDetailsScreen
+import com.ast.app.navigation.appbar.CourseDetailsTopAppbar
+import com.ast.app.navigation.appbar.HomeTopAppbar
+import com.ast.app.navigation.appbar.LiveClassTopAppbar
+import com.ast.app.navigation.appbar.MyCourseDetailsTopAppbar
+import com.ast.app.navigation.appbar.MyCourseTopAppbar
+import com.ast.app.navigation.appbar.StoreTopAppbar
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,167 +87,36 @@ fun AstAppTopAppBar(
 
     // if screen is home screen
     if (TopLevelDestination.Home.route == currentDestination?.route) {
-
-        TopAppBar(
-            title = {
-                Text(
-                    text = "AST(beta)",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                )
-            },
-            modifier = modifier.shadow(elevation = 2.dp),
-//            navigationIcon = {
-//                if (canNavigateBack) {
-//                    IconButton(onClick = navigateUp) {
-//                        Icon(
-//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                            contentDescription = stringResource(
-//                                id = R.string.back_button
-//                            )
-//                        )
-//                    }
-//                }
-//            },
-            actions = {
-                IconButton(onClick = { /* do something */ }) {
-                    Icon(
-                        Icons.Outlined.NotificationsActive,
-                        contentDescription = null,
-                    )
-                }
-                IconButton(onClick = { /* do something */ }) {
-                    Icon(
-                        Icons.Outlined.MoreVert,
-                        contentDescription = null,
-                    )
-                }
-            }
-        )
+        HomeTopAppbar()
     }
 
     // if screen is shop screen
     if (TopLevelDestination.Store.route == currentDestination?.route) {
-        TopAppBar(
-            modifier = modifier.shadow(elevation = 2.dp),
-            title = {
-                Text(
-                    text = "Shop",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                )
-            },
-//            navigationIcon = {
-//                if (canNavigateBack) {
-//                    IconButton(onClick = navigateUp) {
-//                        Icon(
-//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                            contentDescription = stringResource(
-//                                id = R.string.back_button
-//                            )
-//                        )
-//                    }
-//                }
-//            },
-            actions = {
-                IconButton(onClick = { /* do something */ }) {
-                    Icon(
-                        Icons.Outlined.Search,
-                        contentDescription = null,
-                    )
-                }
-                IconButton(onClick = {
-                    navController.navigate(CartScreen.Checkout.route)
-                }) {
-                    Icon(
-                        Icons.Outlined.ShoppingCart,
-                        contentDescription = null,
-                    )
-                }
-            }
-        )
+        StoreTopAppbar()
     }
 
     // if screen is live class screen
     if (TopLevelDestination.LiveClass.route == currentDestination?.route) {
-        TopAppBar(
-            modifier = modifier.shadow(elevation = 2.dp),
-            title = {
-                Text(
-                    text = "Live CLass",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                )
-            },
-//            navigationIcon = {
-//                if (canNavigateBack) {
-//                    IconButton(onClick = navigateUp) {
-//                        Icon(
-//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                            contentDescription = stringResource(
-//                                id = R.string.back_button
-//                            )
-//                        )
-//                    }
-//                }
-//            },
-            actions = {
-//                IconButton(onClick = { /* do something */ }) {
-//                    Icon(
-//                        Icons.Outlined.Tune,
-//                        contentDescription = null,
-//                    )
-//                }
-            }
-        )
+        LiveClassTopAppbar()
     }
 
     // if screen is my course screen
     if (TopLevelDestination.MyCourse.route == currentDestination?.route) {
-        TopAppBar(
-            modifier = modifier.shadow(elevation = 2.dp),
-            title = {
-                Text(
-                    text = "My Course",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                )
-            },
-//            navigationIcon = {
-//                if (canNavigateBack) {
-//                    IconButton(onClick = navigateUp) {
-//                        Icon(
-//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                            contentDescription = stringResource(
-//                                id = R.string.back_button
-//                            )
-//                        )
-//                    }
-//                }
-//            },
-            actions = {
-                IconButton(onClick = { /* do something */ }) {
-                    Icon(
-                        Icons.Outlined.Search,
-                        contentDescription = null,
-                    )
-                }
-                IconButton(onClick = { /* do something */ }) {
-                    Icon(
-                        Icons.Outlined.MoreVert,
-                        contentDescription = null,
-                    )
-                }
-            }
-        )
+        MyCourseTopAppbar()
+    }
+
+    // if screen is course details screen
+    val isCourseDetailsScreen = currentDestination?.route
+        ?.startsWith(CourseDetailsScreen.CourseDetails.route) == true
+    if (isCourseDetailsScreen) {
+        CourseDetailsTopAppbar(navigateUp = navigateUp)
+    }
+
+    // if screen is my course details screen
+    val isMyCourseDetailsScreen = currentDestination?.route
+        ?.startsWith(MyCourseDetailsScreen.MyCourseDetails.route) == true
+    if (isMyCourseDetailsScreen) {
+        MyCourseDetailsTopAppbar(navigateUp = navigateUp)
     }
 
     // if screen is account screen
@@ -261,18 +132,18 @@ fun AstAppTopAppBar(
                     ),
                 )
             },
-//            navigationIcon = {
-//                if (canNavigateBack) {
-//                    IconButton(onClick = navigateUp) {
-//                        Icon(
-//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                            contentDescription = stringResource(
-//                                id = R.string.back_button
-//                            )
-//                        )
-//                    }
-//                }
-//            },
+            navigationIcon = {
+                if (canNavigateBack) {
+                    IconButton(onClick = navigateUp) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(
+                                id = R.string.back_button
+                            )
+                        )
+                    }
+                }
+            },
             actions = {
             }
         )
@@ -290,7 +161,7 @@ fun AstAppTopAppBar(
                     ),
                 )
             },
-        modifier = modifier.shadow(elevation = 2.dp),
+            modifier = modifier.shadow(elevation = 2.dp),
             navigationIcon = {
                 IconButton(onClick = navigateUp) {
                     Icon(

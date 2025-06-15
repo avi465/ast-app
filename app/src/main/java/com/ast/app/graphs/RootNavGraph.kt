@@ -30,7 +30,8 @@ object Graph {
     const val ROOT = "root_graph"
     const val AUTHENTICATION = "auth_graph"
     const val MAIN_SCREEN_PAGE = "main_screen_graph"
-    const val DETAILS = "details_graph"
+    const val MY_COURSE_DETAILS = "my_course_details_graph"
+    const val COURSE_DETAILS = "course_details_graph"
     const val LIVE_CLASS = "live_class_graph"
     const val CART = "cart_graph"
 }

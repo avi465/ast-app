@@ -28,7 +28,7 @@ class EmailLoginViewModel : ViewModel() {
             _uiState.value = UiState.Loading
             try {
                 val response = loginUser(username, password)
-                if (response != null) {
+                if (response.success && response.data != null) {
                     _uiState.value = UiState.Success(response)
                     // Handle successful login (e.g., store token, navigate to home screen)
                     navController.navigate(Graph.MAIN_SCREEN_PAGE) {
@@ -39,11 +39,13 @@ class EmailLoginViewModel : ViewModel() {
                     // Remember login using shared prefs
                     storeCredentials(username, password, context)
                     // todo: do manage login state in app
+                } else if (!response.success && response.errors != null) {
+                    _uiState.value = UiState.Error(response.message)
                 } else {
-                    _uiState.value = UiState.Error("Login failed")
+                    _uiState.value = UiState.Error("Something went wrong")
                 }
             } catch (e: Exception) {
-                _uiState.value = UiState.Error("Error: " + e.message)
+                _uiState.value = UiState.Error("Error: $e")
             }
         }
     }

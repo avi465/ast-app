@@ -1,160 +1,209 @@
 package com.ast.app.presentation.application.home
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material.icons.filled.CopyAll
-import androidx.compose.material.icons.outlined.Book
-import androidx.compose.material.icons.outlined.DownloadDone
-import androidx.compose.material.icons.outlined.Draw
-import androidx.compose.material.icons.outlined.FileCopy
-import androidx.compose.material.icons.outlined.Sensors
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.Quiz
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import coil3.compose.AsyncImage
 import com.ast.app.R
 import com.ast.app.graphs.LiveClassScreen
 import com.ast.app.navigation.TopLevelDestination
-import com.ast.app.presentation.application.shop.CourseCard
+import com.ast.app.presentation.application.home.recommended.Recommended
+import com.ast.app.presentation.application.home.recommended.RecommendedUiState
+import com.ast.app.presentation.application.home.recommended.RecommendedViewModel
 import com.ast.app.presentation.common.BannerPager
-import com.ast.app.presentation.common.LiveLabel
+import com.ast.app.presentation.common.CircularLoader
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    recommendedViewModel: RecommendedViewModel = viewModel(),
     navController: NavController
 ) {
     val scrollState = rememberScrollState()
+    val uiState by recommendedViewModel.recommendedUiState.collectAsState()
 
     Surface(modifier = modifier.fillMaxSize()) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(32.dp),
-            modifier = modifier
-                .verticalScroll(state = scrollState, enabled = true)
-        ) {
-            BannerPager()
-            QuickAccess(modifier = Modifier, navController = navController)
-            LiveClassCard(navController = navController)
-            Recommended(navController = navController)
-            Feedback()
+        when (uiState) {
+            is RecommendedUiState.Error -> {
+                val error = (uiState as RecommendedUiState.Error).error
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = error)
+                }
+            }
+
+            RecommendedUiState.Loading -> {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularLoader()
+
+                }
+            }
+
+            is RecommendedUiState.Success -> {
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    modifier = modifier
+                        .verticalScroll(state = scrollState, enabled = true)
+                ) {
+                    BannerPager()
+                    QuickAccess(modifier = Modifier, navController = navController)
+//                    LiveClassCard(navController = navController)
+//                    DailyQuizCard()
+                    Recommended(navController = navController)
+//                    WhyChooseUsSection()
+                    ScholarshipReferralCard(
+                        onClick = { /* navigate to referral screen */ }
+                    )
+                }
+            }
+
         }
     }
-
 }
 
 @Composable
-fun QuickAccess(navController: NavController, modifier: Modifier) {
-    val list = listOf(
-        Icons.Outlined.Sensors,
-        Icons.Outlined.Draw,
-        Icons.Outlined.DownloadDone,
-        Icons.Outlined.Book
+fun QuickAccess(navController: NavController, modifier: Modifier = Modifier) {
+    val items = listOf(
+        QuickAccessItem("Live Class", R.drawable.satellite_solid),
+        QuickAccessItem("Test Series", R.drawable.hourglass_half_solid),
+        QuickAccessItem("Downloads", R.drawable.file_arrow_down_solid),
+        QuickAccessItem("Notes", R.drawable.book_open_solid)
     )
 
-    val title = listOf(
-        "Live Class",
-        "Test Series",
-        "Downloads",
-        "Resources"
-    )
-
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            QuickAccessCard(navController = navController, icon = list[0], title = title[0])
-            QuickAccessCard(navController = navController, icon = list[1], title = title[1])
-            QuickAccessCard(navController = navController, icon = list[2], title = title[2])
-            QuickAccessCard(navController = navController, icon = list[3], title = title[3])
+        items.forEach { item ->
+            QuickAccessCard(
+                navController = navController,
+                item = item,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
 
+data class QuickAccessItem(
+    val title: String,
+    val iconRes: Int,
+)
+
 @Composable
-fun QuickAccessCard(navController: NavController, icon: ImageVector, title: String) {
+fun QuickAccessCard(
+    navController: NavController,
+    item: QuickAccessItem,
+    modifier: Modifier = Modifier
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier
-            .clickable {
-                if (title == "Live Class") {
-                    navController.navigate(TopLevelDestination.LiveClass.route) {
-                        // Pop up to the start destination of the graph to
-                        // avoid building up a large stack of destinations
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        // Avoid multiple copies of the same destination when
-                        // re-selecting the same item
-                        launchSingleTop = true
-                        // Restore state when re-selecting a previously selected item
-                        restoreState = true
-                    }
-                }
-            }
-            .padding(8.dp)
+        modifier = modifier
     ) {
-        Row(
+        Card(
             modifier = Modifier
-                .size(29.dp)
+                .aspectRatio(1f)
+                .fillMaxWidth()
+                .clickable {
+                    if (item.title == "Live Class") {
+                        navController.navigate(TopLevelDestination.LiveClass.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                },
+//            colors = CardDefaults.cardColors()
+//                .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.4f))
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                tint = MaterialTheme.colorScheme.primary
-            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = item.iconRes),
+                    contentDescription = item.title,
+                    modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
+
         Text(
-            text = title,
-            style = MaterialTheme.typography.titleSmall,
+            text = item.title,
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -173,8 +222,9 @@ fun LiveClassCard(navController: NavController) {
                 .fillMaxSize()
         ) {
             Text(
-                text = "LIVE CLASS",
-                style = MaterialTheme.typography.titleMedium
+                text = "Live class",
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 18.sp
             )
             IconButton(onClick = {
 //                navController.navigate(TopLevelDestination.LiveClass.route)
@@ -204,7 +254,9 @@ fun LiveClassCard(navController: NavController) {
                     navController.navigate(LiveClassScreen.LiveClassPlayer.route)
                 }
                 .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(8.dp)
+//            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+//            colors = CardDefaults.elevatedCardColors(containerColor = Color.Transparent)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -216,152 +268,273 @@ fun LiveClassCard(navController: NavController) {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
-                        .height(148.dp)
+                        .height(164.dp)
                         .align(Alignment.Center)
                 )
-                LiveLabel(modifier = Modifier.align(alignment = Alignment.BottomEnd))
+//                LiveLabel(modifier = Modifier.align(alignment = Alignment.BottomStart))
+                Icon(
+                    imageVector = Icons.Filled.PlayCircle,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .size(56.dp)
+                        .padding(8.dp)
+                )
             }
 
             ListItem(
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                overlineContent = { Text(text = "BANK/SSC/RAILWAY") },
-                headlineContent = { Text(text = "Surface Tension - Physics") },
-                supportingContent = { Text(text = "In this lecture we are going to learn about competitive exam pattern") },
-            )
-        }
-    }
-}
-
-@Composable
-fun Recommended(navController: NavController) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxSize()
-        ) {
-            Text(
-                text = "LATEST COURSES",
-                style = MaterialTheme.typography.titleMedium
-            )
-            IconButton(onClick = {
-//                navController.navigate(TopLevelDestination.Store.route)
-                navController.navigate(TopLevelDestination.Store.route) {
-                    // Pop up to the start destination of the graph to
-                    // avoid building up a large stack of destinations
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
+                overlineContent = { Text(text = "PHYSICS") },
+                headlineContent = {
+                    Text(
+                        text = "KINEMATICS",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                },
+                supportingContent = {
+                    Column {
+                        Text(
+                            text = "Avinash Karmjit",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        )
+                        Text(
+                            text = "Started 38 min ago",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
-                    // Avoid multiple copies of the same destination when
-                    // re-selecting the same item
-                    launchSingleTop = true
-                    // Restore state when re-selecting a previously selected item
-                    restoreState = true
-                }
-            }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                    contentDescription = null,
-                )
-            }
+                },
+            )
+
         }
-        RecommendedPager(navController = navController)
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun RecommendedPager(navController: NavController) {
-    val imageSlider = listOf(
-        painterResource(id = R.drawable.course_img1),
-        painterResource(id = R.drawable.course_img1),
+fun WhyChooseUsSection() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        // Heading
+        Text(
+            text = "Why Choose Us?",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Text(
+            text = "Join a trusted learning ecosystem built for your success.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+
+        // Stats Grid
+        StatsGrid()
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Testimonials
+        Testimonials()
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Image Gallery
+        InfrastructureImages()
+    }
+}
+
+@Composable
+fun StatsGrid() {
+    val stats = listOf(
+        Triple(
+            "95% Success Rate",
+            Icons.Default.EmojiEvents,
+            "Students consistently perform well."
+        ),
+        Triple("10K+ Students", Icons.Default.People, "Trusted by thousands across India."),
+        Triple("50+ Mentors", Icons.Default.School, "Experienced & caring teachers.")
     )
 
-    val pagerState = rememberPagerState(pageCount = {
-        imageSlider.size
-    })
-
-    Box {
-        HorizontalPager(
-            state = pagerState,
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            pageSpacing = 8.dp,
-        ) { page ->
-            CourseCard(
-                name = "Jee Main 2025",
-                description = "welcome to the math course by advance study tutorials",
-                price = 1000,
-                discount = 70,
-                img = painterResource(id = R.drawable.course_img1),
-                navController = navController
-            )
+    Column {
+        stats.chunked(2).forEach { rowItems ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                rowItems.forEach { (title, icon, desc) ->
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(vertical = 8.dp),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(text = title, fontWeight = FontWeight.Bold)
+                            Text(
+                                text = desc,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-fun Feedback() {
-    Box(
-        modifier = Modifier
-            .padding(vertical = 32.dp)
-            .fillMaxSize()
-            .height(224.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = "Invite friends to get ${'\u20B9'}250 off",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Invite friend to Advanced Study Tutorials and get ${'\u20B9'}250 off on their first purchase",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight(400),
-                fontSize = 14.sp
-            )
-            val inviteCodeText = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        fontWeight = FontWeight(400),
-                        fontSize = 14.sp
-                    )
-                ) {
-                    append("Copy your invite code ")
-                }
+fun Testimonials() {
+    val testimonials = listOf(
+        Testimonial(
+            "Amit Sharma",
+            "Cleared NEET in my first attempt thanks to expert faculty.",
+            "https://randomuser.me/api/portraits/men/32.jpg"
+        ),
+        Testimonial(
+            "Priya Verma",
+            "The structured courses and mock tests helped me a lot.",
+            "https://randomuser.me/api/portraits/women/45.jpg"
+        )
+    )
 
-                withStyle(
-                    style = SpanStyle(
-                        fontWeight = FontWeight(600),
-                        fontSize = 14.sp
-                    )
-                ) {
-                    append("Zb67ghi8")
-                }
-            }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+    Column {
+        Text(
+            "Student Testimonials",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
+
+        testimonials.forEach {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                elevation = CardDefaults.cardElevation(2.dp)
             ) {
-                Text(
-                    text = inviteCodeText,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Icon(imageVector = Icons.Filled.CopyAll, contentDescription = "copy", Modifier.size(20.dp))
-            }
-
-
-            OutlinedButton(onClick = { /*TODO*/ }) {
-                Text(text = "Invite")
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AsyncImage(
+                        model = it.imageUrl,
+                        contentDescription = it.name,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text(text = it.name, fontWeight = FontWeight.Bold)
+                        Text(text = "\"${it.text}\"", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
             }
         }
-
     }
 }
+
+@Composable
+fun InfrastructureImages() {
+    val images = listOf(
+        "https://yourdomain.com/classroom1.jpg",
+        "https://yourdomain.com/classroom2.jpg",
+        "https://yourdomain.com/classroom3.jpg"
+    )
+
+    Text(
+        "Our Campus",
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        items(images) { imageUrl ->
+            Card(
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .size(width = 220.dp, height = 140.dp)
+            ) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "Campus Image",
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DailyQuizCard() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp),
+        shape = RectangleShape,
+        colors = CardDefaults.cardColors()
+            .copy(containerColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.4f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(Icons.Default.Quiz, contentDescription = null)
+            Spacer(Modifier.width(12.dp))
+            Column {
+                Text("Daily Practice", fontWeight = FontWeight.Medium)
+                Text("Solve 10 questions now", color = Color.Gray)
+            }
+        }
+    }
+}
+
+@Composable
+fun ScholarshipReferralCard(
+    modifier: Modifier = Modifier,
+    title: String = "Earn ₹500 by Referring!",
+    subtitle: String = "Invite your friends and both of you get exciting rewards.",
+    buttonText: String = "Refer Now",
+    onClick: () -> Unit = {}
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 18.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = onClick,
+            ) {
+                Text(text = buttonText)
+            }
+        }
+    }
+}
+
+
+// Model
+data class Testimonial(val name: String, val text: String, val imageUrl: String)

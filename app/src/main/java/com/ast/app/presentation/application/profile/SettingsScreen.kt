@@ -11,36 +11,38 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Article
-import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.Logout
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Brightness5
-import androidx.compose.material.icons.outlined.Help
-import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material.icons.outlined.WbSunny
-import androidx.compose.material.icons.twotone.WbSunny
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.net.toUri
-import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavHostController
 import com.ast.app.MainActivity
 import com.ast.app.datastore.PreferencesDataStore
+import com.ast.app.graphs.Graph
+import com.ast.app.network.utils.CookieManager
+import com.razorpay.Checkout
 import kotlinx.coroutines.launch
 
 @Composable
@@ -72,6 +74,17 @@ fun SettingsContent(
     val isDarkTheme by preferencesDataStore.darkThemeFlow.collectAsState(initial = isSystemInDarkTheme())
     val useDynamicColor by preferencesDataStore.dynamicColorFlow.collectAsState(initial = false)
     val coroutineScope = rememberCoroutineScope()
+    var isLoggedOut by remember { mutableStateOf(false) }
+
+    // Observe logout state and navigate if needed
+//    LaunchedEffect(isLoggedOut) {
+//        if (isLoggedOut) {
+//            rootNavController.popBackStack(
+//                rootNavController.graph.startDestinationId,
+//                false
+//            )
+//        }
+//    }
 
     Column(
         modifier = Modifier.verticalScroll(scrollState)
@@ -172,29 +185,54 @@ fun SettingsContent(
             title = "Logout",
             subtitle = "Logout from your account on this device",
             icon = Icons.AutoMirrored.Outlined.Logout,
+            tint = MaterialTheme.colorScheme.error,
+            textColor = MaterialTheme.colorScheme.error,
             onClick = {
-                /* Handle Logout */
-                try {
-                    val sharedPreferences =
-                        context.getSharedPreferences(
-                            MainActivity.SHARED_PREFS,
-                            Context.MODE_PRIVATE
-                        )
-                    with(sharedPreferences.edit()) {
-                        putString("username", null)
-                        putString("password", null)
-                        putBoolean("remember_me", false)
-                        apply()
+                // Launch the logout task in a coroutine
+                coroutineScope.launch {
+                    /* Handle Logout */
+                    try {
+                        val sharedPreferences =
+                            context.getSharedPreferences(
+                                MainActivity.SHARED_PREFS,
+                                Context.MODE_PRIVATE
+                            )
+                        with(sharedPreferences.edit()) {
+                            putString("username", null)
+                            putString("password", null)
+                            putBoolean("remember_me", false)
+                            apply()
+                        }
+
+                        // Optionally, you can make a server request to log out here
+                        // Example: api.logout()
+
+                        // Update state to trigger recomposition after the task
+                        // isLoggedOut = true
+
+                        //todo: do server logout request
+                        CookieManager.clear()
+
+
+                        // Erase data of customer from razorpay sdk on logout
+                        Checkout.clearUserData(context)
+
+                        rootNavController.navigate(Graph.ROOT) {
+                            popUpTo(Graph.MAIN_SCREEN_PAGE) {
+                                inclusive = true
+                            }
+                        }
+
+//                        rootNavController.popBackStack(
+//                            rootNavController.graph.startDestinationId,
+//                            false
+//                        )
+
+                    } catch (e: Exception) {
+                        Log.d("TAG", "SettingsContent: $e")
+                        Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
                     }
-                    // Handle successful login (e.g., store token, navigate to home screen)
-                    rootNavController.popBackStack(rootNavController.graph.startDestinationId, false)
-                    //todo: do server logout request
-
-                } catch (e: Exception) {
-                    Log.d("TAG", "SettingsContent: $e")
-                    Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
-
             }
         )
     }
@@ -205,6 +243,8 @@ fun SettingsItem(
     title: String,
     subtitle: String? = null,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
+    tint: Color? = null,
+    textColor: Color? = null,
     isSwitch: Boolean = false,
     isChecked: Boolean = false,
     onCheckedChange: ((Boolean) -> Unit)? = null,
@@ -214,14 +254,19 @@ fun SettingsItem(
         modifier = Modifier.clickable(
             enabled = onClick != null,
             onClick = { onClick?.invoke() }),
-        headlineContent = { Text(title) },
+        headlineContent = { Text(title, color = textColor ?: LocalContentColor.current) },
         supportingContent = {
             if (subtitle != null) {
-                Text(subtitle)
+                Text(subtitle, color = textColor ?: LocalContentColor.current)
             }
         },
         leadingContent = {
-            Icon(imageVector = icon, contentDescription = null)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = tint ?: LocalContentColor.current
+            )
+
         },
         trailingContent = {
             if (isSwitch) {

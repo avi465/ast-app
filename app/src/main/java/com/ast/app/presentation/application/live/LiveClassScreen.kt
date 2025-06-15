@@ -1,6 +1,5 @@
 package com.ast.app.presentation.application.live
 
-import android.graphics.drawable.VectorDrawable
 import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -14,16 +13,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +36,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.ast.app.R
@@ -165,66 +160,6 @@ fun LiveClassScreen(
             }
         }
     }
-
-//    var selectedTabIndex by remember { mutableIntStateOf(0) }
-//    val tabItems = listOf("All", "Live", "Schedule", "Completed")
-//    Column(
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.spacedBy(16.dp)
-//    ) {
-//        ScrollableTabRow(
-//            selectedTabIndex = selectedTabIndex,
-//            edgePadding = 16.dp,
-//        ) {
-//            tabItems.forEachIndexed { index, item ->
-//                Tab(
-//                    selected = index == selectedTabIndex,
-//                    onClick = { selectedTabIndex = index },
-//                    text = { Text(text = item) },
-//                    unselectedContentColor = MaterialTheme.colorScheme.onSurface
-//                )
-//            }
-//        }
-//
-//
-//        if (selectedTabIndex == 0) {
-//            LazyColumn(
-//                modifier = Modifier.fillMaxSize(),
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.spacedBy(16.dp),
-//                contentPadding = PaddingValues(bottom = 16.dp)
-//            ) {
-//                item {
-//                    LiveClassCard(navController = navController)
-//                }
-//                item {
-//                    LiveClassCard(navController = navController)
-//                }
-//            }
-//        } else if (selectedTabIndex == 1) {
-//            Column(
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.Center,
-//                modifier = Modifier.fillMaxSize()
-//            ) {
-//                Text(
-//                    text = "This feature is being developed",
-//                    style = MaterialTheme.typography.bodyLarge
-//                )
-//            }
-//        } else if (selectedTabIndex == 2) {
-//            Column(
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.Center,
-//                modifier = Modifier.fillMaxSize()
-//            ) {
-//                Text(
-//                    text = "This feature is being developed",
-//                    style = MaterialTheme.typography.bodyLarge
-//                )
-//            }
-//        }
-//    }
 }
 
 @OptIn(UnstableApi::class)
@@ -238,11 +173,13 @@ fun LiveClassCard(navController: NavController) {
         ElevatedCard(
             Modifier
                 .clickable {
-                    navController.navigate(LiveClassScreen.LiveClassPlayer.route){
+                    navController.navigate(LiveClassScreen.LiveClassPlayer.route) {
                         launchSingleTop = true
                     }
                 },
-            shape = RectangleShape
+            shape = RectangleShape,
+            elevation = CardDefaults.elevatedCardElevation(0.dp),
+            colors = CardDefaults.elevatedCardColors(Color.Transparent)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -254,7 +191,7 @@ fun LiveClassCard(navController: NavController) {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
-                        .height(148.dp)
+                        .height(224.dp)
                         .align(Alignment.Center)
                 )
                 LiveLabel(modifier = Modifier.align(Alignment.BottomEnd))

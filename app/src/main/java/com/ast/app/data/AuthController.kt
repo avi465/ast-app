@@ -1,6 +1,8 @@
 package com.ast.app.data
 
 import android.util.Log
+import com.ast.app.exception.ApiServiceException
+import com.ast.app.model.ApiResponse
 import com.ast.app.model.GetPhoneOtpRequest
 import com.ast.app.model.GetPhoneOtpResponse
 import com.ast.app.model.LoginRequest
@@ -11,7 +13,7 @@ import com.ast.app.model.VerifyPhoneOtpRequest
 import com.ast.app.model.VerifyPhoneOtpResponse
 import com.ast.app.network.RetrofitClient
 
-suspend fun loginUser(username: String, password: String): LoginResponse? {
+suspend fun loginUser(username: String, password: String): ApiResponse<LoginResponse> {
     try {
         val request = LoginRequest(username, password)
         val response = RetrofitClient.apiService.login(request)
@@ -19,8 +21,8 @@ suspend fun loginUser(username: String, password: String): LoginResponse? {
         return response
     } catch (e: Exception) {
         // Handle exceptions gracefully (e.g., log them, display error messages)
-        Log.e("AuthController", e.message.toString())
-        return null;
+        Log.e("AuthController", e.toString())
+        throw ApiServiceException(e.toString())
     }
 }
 

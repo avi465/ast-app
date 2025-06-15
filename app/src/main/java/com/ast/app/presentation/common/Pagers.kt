@@ -27,18 +27,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.ast.app.R
-import com.ast.app.ui.theme.AdvancedStudyTutorialsTheme
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BannerPager() {
     val imageSlider = listOf(
-        painterResource(id = R.drawable.img_banner1)
+        painterResource(id = R.drawable.course_img1),
     )
 
     val pagerState = rememberPagerState(pageCount = {
@@ -107,7 +105,7 @@ fun BannerPager() {
                     .wrapContentWidth()
                     .padding(bottom = 8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.2f)
+                    containerColor = Color(0xFFF9F9F9)
                 )
             ) {
                 Row(
@@ -129,13 +127,5 @@ fun BannerPager() {
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun SliderBannerPreview() {
-    AdvancedStudyTutorialsTheme {
-        BannerPager()
     }
 }

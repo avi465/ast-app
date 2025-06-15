@@ -3,13 +3,11 @@ package com.ast.app.ui.theme
 import android.app.Activity
 import android.os.Build
 import android.view.View
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.Typography
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.SideEffect
@@ -20,7 +18,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ast.app.datastore.PreferencesDataStore
 
 private val lightScheme = lightColorScheme(
@@ -272,21 +269,21 @@ fun AdvancedStudyTutorialsTheme(
     val preferencesDataStore = PreferencesDataStore(context)
 
     // Observe both dark theme and dynamic color settings
-    val darkTheme by preferencesDataStore.darkThemeFlow.collectAsState(initial = null)
-    val dynamicColor by preferencesDataStore.dynamicColorFlow.collectAsState(initial = null)
+    val darkTheme by preferencesDataStore.darkThemeFlow.collectAsState(initial = false)
+    val dynamicColor by preferencesDataStore.dynamicColorFlow.collectAsState(initial = false)
 
     val colorScheme = when {
-        dynamicColor == true && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            if (darkTheme == true) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme == true -> darkScheme
+        darkTheme -> darkScheme
         else -> lightScheme
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            darkTheme?.let { setUpEdgeToEdge(view, it) }
+            setUpEdgeToEdge(view, darkTheme)
         }
     }
 

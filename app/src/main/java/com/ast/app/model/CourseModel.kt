@@ -7,12 +7,15 @@ import kotlinx.serialization.Serializable
 data class Course(
     @SerialName("_id") val id: String,
     val name: String,
+    val slug: String,
     val description: String,
+    val details: String,
     val price: Int,
     val discount: Int,
-    val stock: Int,
+    val category: Category,
     val images: List<CourseImage>,
-    val reviews: List<String>,
+    val ratings: Rating,
+    val isActive: Boolean,
     val createdAt: String,
     val updatedAt: String,
     @SerialName("__v") val v: Int
@@ -23,4 +26,11 @@ data class CourseImage(
     val url: String,
     val altText: String,
     @SerialName("_id") val id: String,
+)
+
+@Serializable
+data class Rating(
+    val total: Int,
+    val count: Int,
+    val average: Float,
 )
