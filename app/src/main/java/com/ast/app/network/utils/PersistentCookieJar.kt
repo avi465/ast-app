@@ -1,6 +1,7 @@
 package com.ast.app.network.utils
 
 import android.content.SharedPreferences
+import android.util.Log
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl

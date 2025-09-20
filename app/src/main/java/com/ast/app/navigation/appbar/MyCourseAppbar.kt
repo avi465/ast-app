@@ -22,8 +22,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.unit.dp
 import com.ast.app.presentation.bottomsheet.CategoryBottomSheet
 import com.ast.app.presentation.bottomsheet.availableCourses
 import kotlinx.coroutines.launch
@@ -58,6 +60,7 @@ fun MyCourseTopAppbar() {
     }
 
     TopAppBar(
+        modifier = Modifier.shadow(elevation = 2.dp),
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

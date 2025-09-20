@@ -16,7 +16,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import coil3.ImageLoader
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import com.ast.app.graphs.RootNavigationGraph
+import com.ast.app.network.okHttpClient
 import com.ast.app.network.utils.ConnectivityObserver
 import com.ast.app.network.utils.CookieManager
 import com.ast.app.network.utils.NetworkConnectivityObserver

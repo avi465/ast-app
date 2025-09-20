@@ -20,22 +20,33 @@ class RecommendedViewModel : ViewModel() {
         MutableStateFlow<RecommendedUiState>(RecommendedUiState.Loading)
     val recommendedUiState: StateFlow<RecommendedUiState> = _recommendedUiState.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     init {
         getRecommendedCourses()
     }
 
-    private fun getRecommendedCourses() {
+    fun getRecommendedCourses() {
         viewModelScope.launch {
+            _isRefreshing.value = true
             try {
                 val response = getAllRecommendedCourses()
-                if (response.data != null) {
-                    _recommendedUiState.value = RecommendedUiState.Success(response.data)
+                if (response.isSuccessful) {
+                    _recommendedUiState.value =
+                        RecommendedUiState.Success(response.body()?.data ?: emptyList())
                 } else {
-                    _recommendedUiState.value = RecommendedUiState.Success(null)
+                    _recommendedUiState.value = RecommendedUiState.Error(
+                        response.body()?.errors?.joinToString(", ") { it.details.toString() }
+                            ?: response.errorBody()?.string() ?: "Something went wrong"
+                    )
                 }
             } catch (e: Exception) {
-                _recommendedUiState.value = RecommendedUiState.Error(e.message.toString())
+                _recommendedUiState.value = RecommendedUiState.Error(e.message ?: "Unknown error")
+            } finally {
+                _isRefreshing.value = false
             }
+
         }
     }
 }

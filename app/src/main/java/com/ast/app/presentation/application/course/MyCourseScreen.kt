@@ -1,5 +1,7 @@
 package com.ast.app.presentation.application.course
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,12 +16,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -28,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -37,7 +40,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.ast.app.graphs.MyCourseDetailsScreen
 import com.ast.app.model.Course
-import com.ast.app.network.IMAGE_RESOURCE_ENDPOINT
+import com.ast.app.network.RESOURCE_ENDPOINT
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,12 +65,14 @@ fun MyCourseScreen(
                 is MyCourseUiState.Error -> {
                     val error = (uiState as MyCourseUiState.Error).error
                     Column(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(text = error)
-                        Button(onClick = { myCourseViewModel.getPurchasedCourses() }) {
+                        TextButton(onClick = { myCourseViewModel.getPurchasedCourses() }) {
                             Text(text = "Reload")
                         }
                     }
@@ -135,15 +140,32 @@ fun MyCourse(
             modifier = Modifier.padding(8.dp)
         ) {
             // Course Thumbnail
-            AsyncImage(
-                model = IMAGE_RESOURCE_ENDPOINT + course.images[0].url + "_landscapeSM.webp",
-                contentDescription = course.name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .width(96.dp)
-                    .height(96.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
+            if (course.images.isNotEmpty()) {
+                AsyncImage(
+                    model = RESOURCE_ENDPOINT + course.images[0].url + "_landscapeSM.webp",
+                    contentDescription = course.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(96.dp)
+                        .height(96.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }else{
+                Box(
+                    modifier = Modifier
+                        .width(112.dp)
+                        .height(112.dp)
+                        .clip(shape = RoundedCornerShape(8.dp))
+                        .background(Color.LightGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No Image",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.DarkGray
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 
@@ -174,9 +196,9 @@ fun MyCourse(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "Status: Ongoing",
+                    text = "Status: ${course.status}",
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
         }

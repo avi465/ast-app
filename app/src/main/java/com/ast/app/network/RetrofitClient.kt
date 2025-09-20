@@ -8,8 +8,9 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 
 //private const val API_ENDPOINT = "https://ast-qbnh4.ondigitalocean.app"
-private const val API_ENDPOINT = "https://29042a9e48ba-7364538330906752083.ngrok-free.app"
-const val IMAGE_RESOURCE_ENDPOINT = "$API_ENDPOINT/"
+private const val API_ENDPOINT = "https://advancedstudytutorial.in"
+//private const val API_ENDPOINT = "https://29042a9e48ba-7364538330906752083.ngrok-free.app"
+const val RESOURCE_ENDPOINT = "$API_ENDPOINT/"
 private const val BASE_URL = "$API_ENDPOINT/api/"
 
 val okHttpClient = OkHttpClient.Builder()

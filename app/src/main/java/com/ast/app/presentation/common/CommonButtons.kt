@@ -23,8 +23,7 @@ fun AuthScreenButton(text: String, onClick: () -> Unit, isLoading: Boolean) {
     Button(
         onClick = onClick,
         modifier = Modifier
-            .fillMaxWidth()
-            .height(dimensionResource(id = R.dimen.button_height)),
+            .fillMaxWidth(),
         enabled = !isLoading
     ) {
         Row(

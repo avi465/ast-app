@@ -25,3 +25,14 @@ data class OrderResponse(
     val status: String
 )
 
+@Serializable
+data class OrderModel(
+    @SerialName("_id") val id: String,
+    @SerialName("orderId") val orderId: String,
+    @SerialName("receipt") val receipt: String? = null,
+    @SerialName("user") val user: UserModel? = null,
+    @SerialName("course") val course: Course,
+    @SerialName("createdAt") val createdAt: String? = null,
+    @SerialName("updatedAt") val updatedAt: String? = null,
+)
+

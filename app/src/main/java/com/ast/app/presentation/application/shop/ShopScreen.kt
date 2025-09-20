@@ -1,5 +1,7 @@
 package com.ast.app.presentation.application.shop
 
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,13 +20,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalOffer
-import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -46,7 +48,7 @@ import coil3.compose.AsyncImage
 import com.ast.app.graphs.CourseDetailsScreen
 import com.ast.app.model.Category
 import com.ast.app.model.CourseImage
-import com.ast.app.network.IMAGE_RESOURCE_ENDPOINT
+import com.ast.app.network.RESOURCE_ENDPOINT
 import com.ast.app.presentation.application.shop.payment.PaymentViewModel
 import java.text.NumberFormat
 import java.util.Locale
@@ -79,12 +81,13 @@ fun ShopScreen(
                 is ShopUiState.Error -> {
                     val error = (uiState as ShopUiState.Error).error
                     Column(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize()
+                            .padding(16.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(text = error)
-                        Button(onClick = { shopViewModel.getCourses() }) {
+                        TextButton(onClick = { shopViewModel.getCourses() }) {
                             Text(text = "Reload")
                         }
                     }
@@ -99,7 +102,7 @@ fun ShopScreen(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                        contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
                     ) {
                         if (courses != null) {
                             items(courses) { course ->
@@ -130,10 +133,11 @@ fun CourseCard(
     price: Int,
     discount: Int,
     images: List<CourseImage>,
-    category: Category,
+    category: Category?,
     navController: NavController,
     paymentViewModel: PaymentViewModel = viewModel()
 ) {
+    Log.d("CourseCard", "CourseCard: $courseId")
     ElevatedCard(
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
         modifier = Modifier.clickable {
@@ -141,18 +145,35 @@ fun CourseCard(
         }
     ) {
         Row(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
         ) {
             // Course Thumbnail
-            AsyncImage(
-                model = IMAGE_RESOURCE_ENDPOINT + images[0].url + "_portraitSM.webp",
-                contentDescription = images[0].altText,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .width(112.dp)
-                    .height(112.dp)
-                    .clip(shape = RoundedCornerShape(8.dp))
-            )
+            if (images.isNotEmpty()){
+                AsyncImage(
+                    model = RESOURCE_ENDPOINT + images[0].url + "_portraitSM.webp",
+                    contentDescription = images[0].altText,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(112.dp)
+                        .height(112.dp)
+                        .clip(shape = RoundedCornerShape(8.dp))
+                )
+            }else{
+                Box(
+                    modifier = Modifier
+                        .width(112.dp)
+                        .height(112.dp)
+                        .clip(shape = RoundedCornerShape(8.dp))
+                        .background(Color.LightGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No Image",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.DarkGray
+                    )
+                }
+            }
             Spacer(modifier = Modifier.width(12.dp))
             Column(
                 modifier = Modifier
@@ -160,12 +181,14 @@ fun CourseCard(
                     .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = category.name.uppercase(Locale.getDefault()),
-                    maxLines = 1,
-                    style = MaterialTheme.typography.labelMedium,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (category != null) {
+                    Text(
+                        text = category.name.uppercase(Locale.getDefault()),
+                        maxLines = 1,
+                        style = MaterialTheme.typography.labelMedium,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 Text(
                     text = name,
                     style = MaterialTheme.typography.titleMedium,

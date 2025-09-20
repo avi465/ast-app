@@ -1,10 +1,14 @@
 package com.ast.app.data
 
+import com.ast.app.model.ApiResponse
 import com.ast.app.model.OrderRequest
 import com.ast.app.model.OrderResponse
+import com.ast.app.model.PaymentModel
 import com.ast.app.model.PaymentVerifyRequest
 import com.ast.app.model.PaymentVerifyResponse
+import com.ast.app.model.StreamModel
 import com.ast.app.network.RetrofitClient
+import retrofit2.Response
 
 suspend fun createOrder(courseId: String): OrderResponse {
     return try {
@@ -34,4 +38,8 @@ suspend fun verifyPayment(
         // Handle exceptions gracefully (e.g., log them, display error messages)
         error(message = e)
     }
+}
+
+suspend fun getPaymentsForUser(): Response<ApiResponse<List<PaymentModel>>> {
+    return RetrofitClient.apiService.getPaymentsForUser()
 }

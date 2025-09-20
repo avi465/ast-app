@@ -39,6 +39,9 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -77,51 +80,57 @@ fun HomeScreen(
 ) {
     val scrollState = rememberScrollState()
     val uiState by recommendedViewModel.recommendedUiState.collectAsState()
+    val isRefreshing by recommendedViewModel.isRefreshing.collectAsState()
+    val refreshState = rememberPullToRefreshState()
 
-    Surface(modifier = modifier.fillMaxSize()) {
-        when (uiState) {
-            is RecommendedUiState.Error -> {
-                val error = (uiState as RecommendedUiState.Error).error
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = error)
+    PullToRefreshBox(
+        state = refreshState,
+        isRefreshing = isRefreshing,
+        onRefresh = {
+            recommendedViewModel.getRecommendedCourses()
+        }
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (uiState) {
+                is RecommendedUiState.Success -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(24.dp),
+                        modifier = modifier
+                            .verticalScroll(state = scrollState, enabled = true)
+                    ) {
+                        BannerPager()
+                        QuickAccess(modifier = Modifier, navController = navController)
+                        // LiveClassCard(navController = navController)
+                        // DailyQuizCard()
+                        Recommended(navController = navController)
+                        // WhyChooseUsSection()
+                        /* ScholarshipReferralCard(
+                            onClick = { /* navigate to referral screen */ }
+                        ) */
+                    }
                 }
-            }
 
-            RecommendedUiState.Loading -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CircularLoader()
-
+                is RecommendedUiState.Error -> {
+                    val error = (uiState as RecommendedUiState.Error).error
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = error)
+                        TextButton(onClick = {
+                            recommendedViewModel.getRecommendedCourses()
+                        }) {
+                            Text(text = "Reload")
+                        }
+                    }
                 }
+
+                RecommendedUiState.Loading -> { }
             }
-
-            is RecommendedUiState.Success -> {
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(24.dp),
-                    modifier = modifier
-                        .verticalScroll(state = scrollState, enabled = true)
-                ) {
-                    BannerPager()
-                    QuickAccess(modifier = Modifier, navController = navController)
-//                    LiveClassCard(navController = navController)
-//                    DailyQuizCard()
-                    Recommended(navController = navController)
-//                    WhyChooseUsSection()
-                    ScholarshipReferralCard(
-                        onClick = { /* navigate to referral screen */ }
-                    )
-                }
-            }
-
         }
     }
 }
@@ -193,7 +202,7 @@ fun QuickAccessCard(
                 Icon(
                     imageVector = ImageVector.vectorResource(id = item.iconRes),
                     contentDescription = item.title,
-                    modifier = Modifier.size(28.dp),
+                    modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -514,7 +523,14 @@ fun ScholarshipReferralCard(
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier.padding(
+                start = 16.dp,
+                top = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp
+            )
+        ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,

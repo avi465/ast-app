@@ -15,6 +15,9 @@ import com.ast.app.presentation.application.home.HomeScreen
 import com.ast.app.presentation.application.live.LiveClassScreen
 import com.ast.app.presentation.application.live.VideoPlayerScreen
 import com.ast.app.presentation.application.profile.SettingsScreen
+import com.ast.app.presentation.application.profile.about.AboutScreen
+import com.ast.app.presentation.application.profile.account.AccountScreen
+import com.ast.app.presentation.application.profile.order.OrdersAndTransactionsScreen
 import com.ast.app.presentation.application.shop.ShopScreen
 import com.ast.app.presentation.application.shop.cart.CartScreen
 import com.ast.app.presentation.application.shop.course.details.CourseScreen
@@ -59,6 +62,7 @@ fun MainNavGraph(
         liveClassNavGraph(navController = navController)
         myCourseDetailsNavGraph(navController = navController)
         courseDetailsNavGraph(navController = navController)
+        settingsNavGraph(navController = navController)
         cartNavGraph(navController = navController)
     }
 }
@@ -88,14 +92,32 @@ fun NavGraphBuilder.courseDetailsNavGraph(navController: NavHostController) {
     }
 }
 
+fun NavGraphBuilder.settingsNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.SETTINGS,
+        startDestination = SettingsScreen.Settings.route
+    ) {
+        composable(route = SettingsScreen.Account.route){
+            AccountScreen(navController = navController)
+        }
+        composable(route = SettingsScreen.Orders.route) {
+            OrdersAndTransactionsScreen(navController = navController)
+        }
+        composable(route = SettingsScreen.About.route) {
+            AboutScreen(navController = navController)
+        }
+    }
+}
+
 fun NavGraphBuilder.liveClassNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.LIVE_CLASS,
         startDestination = LiveClassScreen.LiveClassPlayer.route
     ) {
-        composable(route = LiveClassScreen.LiveClassPlayer.route) {
+        composable(route = LiveClassScreen.LiveClassPlayer.route + "/{lessonId}") {backStackEntry ->
+            val lessonId = backStackEntry.arguments?.getString("lessonId")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                VideoPlayerScreen(navController = navController)
+                VideoPlayerScreen(navController = navController, lessonId = lessonId ?: "")
             }
         }
     }
@@ -123,6 +145,13 @@ sealed class CourseDetailsScreen(val route: String) {
 
 sealed class LiveClassScreen(val route: String) {
     object LiveClassPlayer : LiveClassScreen(route = "live_class_player")
+}
+
+sealed class SettingsScreen(val route: String) {
+    object Settings : SettingsScreen(route = "settings")
+    object Account : SettingsScreen(route = "account")
+    object Orders: SettingsScreen(route = "orders")
+    object About : SettingsScreen(route = "about")
 }
 
 sealed class CartScreen(val route: String) {

@@ -1,6 +1,5 @@
 package com.ast.app.presentation.common
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Sensors
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,20 +19,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ast.app.R
+import java.util.Locale
 
 @Composable
 fun PrivacyPolicy() {
@@ -111,27 +106,41 @@ fun OrWithDivider() {
 }
 
 @Composable
-fun LiveLabel(modifier: Modifier){
+fun LiveLabel(modifier: Modifier, status: String) {
+    val textColor = when (status.lowercase(Locale.ROOT)) {
+        "scheduled" -> MaterialTheme.colorScheme.primary
+        "live", "failed" -> MaterialTheme.colorScheme.error
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    val backgroundColor = when (status.lowercase(Locale.ROOT)) {
+        "scheduled" -> MaterialTheme.colorScheme.primaryContainer
+        "live" -> MaterialTheme.colorScheme.errorContainer
+        else -> MaterialTheme.colorScheme.surfaceVariant
+    }
     Surface(
-        color = MaterialTheme.colorScheme.error,
+        color = backgroundColor,
         modifier = modifier
             .padding(16.dp),
         shape = RoundedCornerShape(4.dp)
     ) {
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
         ) {
-            Icon(
-                imageVector = Icons.Filled.Sensors,
-                contentDescription = "live",
-                modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.onError
-            )
+            if (status == "Live") {
+                Icon(
+                    imageVector = Icons.Filled.Sensors,
+                    contentDescription = status,
+                    modifier = Modifier.size(16.dp),
+                    tint = MaterialTheme.colorScheme.onError
+                )
+            }
             Text(
-                text = "LIVE",
+                text = status.uppercase(Locale.ROOT),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onError,
+                color = textColor,
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
             )
         }

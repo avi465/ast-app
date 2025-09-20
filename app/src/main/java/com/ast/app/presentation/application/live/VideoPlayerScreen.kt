@@ -28,7 +28,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,21 +45,31 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.ast.app.model.Lesson
 import com.ast.app.presentation.application.live.videoplayerutils.VideoPlayer
+import com.ast.app.presentation.common.CircularLoader
+import com.ast.app.utils.UiState
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
-fun VideoPlayerScreen(navController: NavHostController) {
+fun VideoPlayerScreen(
+    navController: NavHostController,
+    lessonId: String,
+    videoPlayerViewModel: VideoPlayerViewModel = viewModel(
+        factory = VideoPlayerViewModelProviderFactory(lessonId = lessonId)
+    )
+) {
+    val lessonState by videoPlayerViewModel.lessonState.collectAsState()
+
     val context = LocalContext.current
     val activity = context as? Activity
     var isPlayerVisible by remember { mutableStateOf(true) }
     var isFullScreen by rememberSaveable { mutableStateOf(false) }
-    val url =
-        "https://d35j504z0x2vu2.cloudfront.net/v1/manifest/0bc8e8376bd8417a1b6761138aa41c26c7309312/9xm/23886666-8fc5-470f-aab1-bd637ed607b1/3.m3u8"
-//    val url = "http://137.184.36.54:8000/live/obs_stream/index.m3u8"
-//    val url = "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8"
 
+    // todo: validate if the passed URL to this component is valid and accessible
     val swipeGestureModifier = Modifier
         .fillMaxSize()
         .pointerInput(Unit) {
@@ -78,62 +90,95 @@ fun VideoPlayerScreen(navController: NavHostController) {
             }
         }
 
-    if (isPlayerVisible) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            if (isFullScreen) {
-                enterFullscreen(activity)
-                Box(
+    when (lessonState) {
+        is UiState.Success -> {
+            val lesson = (lessonState as UiState.Success).data
+            val videoUrl = lesson.videoUrl
+            if (videoUrl.isNullOrEmpty()) {
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    VideoPlayer(
-                        modifier = Modifier,
-                        navController = navController,
-                        url = url,
-                        isFullScreen = isFullScreen,
-                        onPlayerReleased = { isPlayerVisible = false },
-                        onFullScreenToggle = { isFullScreen = !isFullScreen }
+                    Text(
+                        text = "No video/stream available for this lesson.",
                     )
+                    TextButton(onClick = {
+                        navController.popBackStack()
+                    }) {
+                        Text(
+                            text = "Go Back",
+                        )
+                    }
                 }
-            } else {
-                exitFullscreen(activity)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(240.dp)
-                        .background(Color.Black)
+            } else if (isPlayerVisible) {
+                Column(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    VideoPlayer(
-                        modifier = Modifier,
-                        navController = navController,
-                        url = url,
-                        isFullScreen = isFullScreen,
-                        onPlayerReleased = { isPlayerVisible = false },
-                        onFullScreenToggle = { isFullScreen = !isFullScreen }
-                    )
-                }
-//                VideoPlayerScreenDetailsCard()
+                    if (isFullScreen) {
+                        enterFullscreen(activity)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black)
+                        ) {
+                            VideoPlayer(
+                                modifier = Modifier,
+                                navController = navController,
+                                url = videoUrl,
+                                isFullScreen = isFullScreen,
+                                onPlayerReleased = { isPlayerVisible = false },
+                                onFullScreenToggle = { isFullScreen = !isFullScreen }
+                            )
+                        }
+                    } else {
+                        exitFullscreen(activity)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(240.dp)
+                                .background(Color.Black)
+                        ) {
+                            VideoPlayer(
+                                modifier = Modifier,
+                                navController = navController,
+                                url = videoUrl,
+                                isFullScreen = isFullScreen,
+                                onPlayerReleased = { isPlayerVisible = false },
+                                onFullScreenToggle = { isFullScreen = !isFullScreen }
+                            )
+                        }
+                        VideoPlayerScreenDetailsCard(lesson = lesson)
 
-                val chatMessages = listOf(
-                    ChatMessage(1, "Alice", "Hey, are you joining the session?", false),
-                    ChatMessage(2, "You", "Yeah, just got in!", true),
+                        val chatMessages = listOf(
+                            ChatMessage(1, "Alice", "Hey, are you joining the session?", false),
+                            ChatMessage(2, "You", "Yeah, just got in!", true),
 
-                    ChatMessage(4, "You", "Sure, it was about projectile motion.", true),
-                    ChatMessage(5, "Alice", "Omg 🤯 that was hard to follow!", false),
-                    ChatMessage(6, "You", "Don’t worry, we’ll go through it again.", true),
-                    ChatMessage(10, "Bob", "Thanks bro 🙌", false),
-                    ChatMessage(11, "You", "No problem 😎", true),
-                    ChatMessage(12, "Alice", "Also, there's a quiz tomorrow right?", false),
-                    ChatMessage(13, "You", "Yes, on Chapter 5. Better revise tonight 😅", true),
-                    ChatMessage(14, "Bob", "Wait what?! I thought it was next week 😭", false),
-                    ChatMessage(15, "You", "Nope. Surprise! 😂", true),
-                    ChatMessage(16, "Alice", "This group is a lifesaver fr 💯", false),
-                    ChatMessage(17, "Alice", "Yo", false),
-                    ChatMessage(18, "You", "Haha we got each other's backs 💪", true),
-                )
+                            ChatMessage(4, "You", "Sure, it was about projectile motion.", true),
+                            ChatMessage(5, "Alice", "Omg 🤯 that was hard to follow!", false),
+                            ChatMessage(6, "You", "Don’t worry, we’ll go through it again.", true),
+                            ChatMessage(10, "Bob", "Thanks bro 🙌", false),
+                            ChatMessage(11, "You", "No problem 😎", true),
+                            ChatMessage(12, "Alice", "Also, there's a quiz tomorrow right?", false),
+                            ChatMessage(
+                                13,
+                                "You",
+                                "Yes, on Chapter 5. Better revise tonight 😅",
+                                true
+                            ),
+                            ChatMessage(
+                                14,
+                                "Bob",
+                                "Wait what?! I thought it was next week 😭",
+                                false
+                            ),
+                            ChatMessage(15, "You", "Nope. Surprise! 😂", true),
+                            ChatMessage(16, "Alice", "This group is a lifesaver fr 💯", false),
+                            ChatMessage(17, "Alice", "Yo", false),
+                            ChatMessage(18, "You", "Haha we got each other's backs 💪", true),
+                        )
 
 
                 Box(modifier = Modifier.weight(1f)) {
@@ -142,6 +187,42 @@ fun VideoPlayerScreen(navController: NavHostController) {
                         onSend = { }
                     )
                 }
+                    }
+                }
+            }
+        }
+
+        is UiState.Error -> {
+            val errorMessage = (lessonState as UiState.Error).error
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Error: $errorMessage",
+                )
+                TextButton(onClick = {
+                    videoPlayerViewModel.fetchLessonByLessonId(lessonId)
+                }) {
+                    Text(
+                        text = "Retry",
+                    )
+                }
+            }
+        }
+
+        is UiState.Loading -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularLoader()
             }
         }
     }
@@ -166,9 +247,10 @@ private fun exitFullscreen(activity: Activity?) {
 }
 
 @Composable
-fun VideoPlayerScreenDetailsCard() {
+fun VideoPlayerScreenDetailsCard(lesson: Lesson) {
     Card(
         shape = RectangleShape,
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
@@ -176,11 +258,13 @@ fun VideoPlayerScreenDetailsCard() {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "KINEMATICS",
+                text = lesson.title.replaceFirstChar { it.uppercase(Locale.getDefault()) },
                 style = MaterialTheme.typography.titleMedium
             )
+
             Text(
-                text = "We will be going to learn kinematics today, like, share and subscribe",
+                text = lesson.description?.replaceFirstChar { it.uppercase(Locale.getDefault()) }
+                    ?: "No description available",
                 style = MaterialTheme.typography.bodyMedium
             )
         }

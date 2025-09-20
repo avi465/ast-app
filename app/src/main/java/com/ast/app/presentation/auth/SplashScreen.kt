@@ -88,7 +88,6 @@ fun SplashScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.button_height))
                 ) {
                     Icon(
                         imageVector = Icons.Filled.PhoneIphone,
@@ -112,7 +111,6 @@ fun SplashScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.button_height))
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Email,
@@ -135,7 +133,6 @@ fun SplashScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.button_height))
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_google),
@@ -158,7 +155,6 @@ fun SplashScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.button_height))
                 ) {
                     val loginText = buildAnnotatedString {
                         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {

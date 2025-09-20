@@ -9,8 +9,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ast.app.R
 
@@ -18,9 +21,10 @@ import com.ast.app.R
 @Composable
 fun CourseDetailsTopAppbar(navigateUp: () -> Unit) {
     TopAppBar(
+        modifier = Modifier.shadow(elevation = 2.dp),
         title = {
             Text(
-                text = "Gate",
+                text = "",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium

@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Replay10
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,13 +49,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
@@ -82,6 +87,7 @@ fun VideoPlayer(
     val activity = context as? Activity
     var isPlayerReady by remember { mutableStateOf(false) }
     var isBuffering by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     var currentPosition by remember { mutableLongStateOf(0L) }
     var duration by remember { mutableLongStateOf(0L) }
@@ -104,10 +110,33 @@ fun VideoPlayer(
                         isPlayerReady = true
                         isBuffering = false
                         duration = exoPlayer.duration
+                        errorMessage = null
                     }
 
                     Player.STATE_BUFFERING -> isBuffering = true
                     Player.STATE_ENDED, Player.STATE_IDLE -> isBuffering = false
+                }
+            }
+
+            override fun onIsPlayingChanged(isPlayingNow: Boolean) {
+                isPlaying = isPlayingNow
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                isBuffering = false
+                isPlaying = false
+                errorMessage = when (error.errorCode) {
+                    PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED -> "No internet connection"
+                    PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS -> "Something went wrong"
+                    PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND -> "Video not found"
+                    PlaybackException.ERROR_CODE_IO_NO_PERMISSION -> "Access denied"
+                    PlaybackException.ERROR_CODE_PARSING_CONTAINER_UNSUPPORTED -> "Unsupported format"
+                    PlaybackException.ERROR_CODE_DECODER_INIT_FAILED -> "Decoder error"
+                    PlaybackException.ERROR_CODE_DECODING_FAILED -> "Playback failed"
+                    PlaybackException.ERROR_CODE_TIMEOUT -> "Connection timed out"
+                    PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW -> "Live stream ended"
+                    PlaybackException.ERROR_CODE_IO_UNSPECIFIED -> "Stream unavailable"
+                    else -> "Playback error"
                 }
             }
         }
@@ -193,10 +222,12 @@ fun VideoPlayer(
         }
     )
 
-    if (showControls) {
-        LaunchedEffect(Unit) {
-            delay(2000L)
-            showControls = false
+    if (errorMessage == null && (showControls || isBuffering || !isPlaying)) {
+        LaunchedEffect(isBuffering, isPlaying, showControls) {
+            if (isPlaying && !isBuffering) {
+                delay(2000L)
+                showControls = false
+            }
         }
 
         Box(
@@ -314,6 +345,19 @@ fun VideoPlayer(
             }
         }
     }
+
+    if (errorMessage != null) {
+        ErrorOverlay(
+            message = errorMessage!!,
+            onRetry = {
+                errorMessage = null
+                isBuffering = true
+                exoPlayer.setMediaItem(MediaItem.fromUri(url))
+                exoPlayer.prepare()
+                exoPlayer.play()
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -363,6 +407,48 @@ fun PlaybackSlider(
         }
     )
 }
+
+@Composable
+fun ErrorOverlay(
+    message: String,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.4f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 32.dp)
+            )
+
+            IconButton(
+                onClick = onRetry,
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(Color.White.copy(alpha = 0.15f), CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "Retry",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        }
+    }
+}
+
 
 fun formatDuration(duration: Long): String {
     val totalSeconds = duration / 1000

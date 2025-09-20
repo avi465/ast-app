@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ast.app.data.getAllCourses
 import com.ast.app.model.Course
+import com.ast.app.utils.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,13 +39,16 @@ class ShopViewModel : ViewModel() {
             _isRefreshing.value = true
             try {
                 val response = getAllCourses()
-                if (response.data != null) {
-                    _shopUiState.value = ShopUiState.Success(response.data)
+                if (response.isSuccessful) {
+                    _shopUiState.value = ShopUiState.Success(response.body()?.data?: emptyList())
                 } else {
-                    _shopUiState.value = ShopUiState.Error("No data")
+                    _shopUiState.value = ShopUiState.Error(
+                        response.body()?.errors?.joinToString(", ") { it.details.toString() }
+                            ?: response.errorBody()?.string() ?: "Something went wrong"
+                    )
                 }
             } catch (e: Exception) {
-                _shopUiState.value = ShopUiState.Error(e.message.toString())
+                _shopUiState.value = ShopUiState.Error(e.message ?: "Unknown error")
             } finally {
                 _isRefreshing.value = false
             }

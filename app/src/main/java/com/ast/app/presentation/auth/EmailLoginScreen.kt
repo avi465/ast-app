@@ -202,7 +202,6 @@ fun EmailLoginScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.button_height))
                 ) {
                     Text(text = "Forgot your password?")
                 }

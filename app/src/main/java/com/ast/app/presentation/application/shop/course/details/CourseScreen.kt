@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
-import com.ast.app.network.IMAGE_RESOURCE_ENDPOINT
+import com.ast.app.network.RESOURCE_ENDPOINT
 import com.ast.app.presentation.application.shop.numberFormat
 import com.ast.app.presentation.application.shop.payment.PaymentVerificationUiState
 import com.ast.app.presentation.application.shop.payment.PaymentViewModel
@@ -63,9 +63,7 @@ fun CourseScreen(
     navController: NavHostController,
     paymentViewModel: PaymentViewModel = viewModel(),
     courseDetailViewModel: CourseDetailViewModel = viewModel(
-        factory = CourseDetailsViewModelProviderFactory(
-            courseId = courseId
-        )
+        factory = CourseDetailsViewModelProviderFactory(courseId = courseId)
     ),
     createOrderViewModel: CreateOrderViewModel = viewModel()
 ) {
@@ -217,14 +215,31 @@ fun CourseScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             item {
-                                AsyncImage(
-                                    model = IMAGE_RESOURCE_ENDPOINT + course.images[0].url + "_landscapeSM.webp",
-                                    contentDescription = course.images[0].altText,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(196.dp)
-                                )
+                                if (course.images.isNotEmpty()){
+
+                                    AsyncImage(
+                                        model = RESOURCE_ENDPOINT + course.images[0].url + "_landscapeSM.webp",
+                                        contentDescription = course.images[0].altText,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(196.dp)
+                                    )
+                                }else{
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(196.dp)
+                                            .background(Color.LightGray),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = "No Image",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color.DarkGray
+                                        )
+                                    }
+                                }
                             }
                             item {
                                 Column(
@@ -266,7 +281,7 @@ fun CourseScreen(
 
                                     // Category Label
                                     CategoryLabel(
-                                        text = course.category.name
+                                        text = course.category?.name ?: "General",
                                     )
                                 }
                             }

@@ -3,8 +3,10 @@ package com.ast.app.presentation.application.profile
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
@@ -20,6 +22,9 @@ import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material.icons.outlined.WbSunny
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -27,6 +32,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,14 +40,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.ast.app.MainActivity
 import com.ast.app.datastore.PreferencesDataStore
 import com.ast.app.graphs.Graph
+import com.ast.app.graphs.SettingsScreen
 import com.ast.app.network.utils.CookieManager
+import com.ast.app.presentation.common.FullScreenDialog
 import com.razorpay.Checkout
 import kotlinx.coroutines.launch
 
@@ -74,17 +84,12 @@ fun SettingsContent(
     val isDarkTheme by preferencesDataStore.darkThemeFlow.collectAsState(initial = isSystemInDarkTheme())
     val useDynamicColor by preferencesDataStore.dynamicColorFlow.collectAsState(initial = false)
     val coroutineScope = rememberCoroutineScope()
-    var isLoggedOut by remember { mutableStateOf(false) }
 
-    // Observe logout state and navigate if needed
-//    LaunchedEffect(isLoggedOut) {
-//        if (isLoggedOut) {
-//            rootNavController.popBackStack(
-//                rootNavController.graph.startDestinationId,
-//                false
-//            )
-//        }
-//    }
+    var showDialog by remember { mutableStateOf(false) }
+    var dialogTitle by remember { mutableStateOf("") }
+    var dialogContent by remember { mutableStateOf("") }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.verticalScroll(scrollState)
@@ -94,7 +99,7 @@ fun SettingsContent(
             title = "Account & Profile",
             subtitle = "View and edit your profile",
             icon = Icons.Outlined.AccountCircle,
-            onClick = { /* Navigate to Profile Settings */ }
+            onClick = { navController.navigate(SettingsScreen.Account.route) }
         )
 
         // Transactions (Orders)
@@ -102,7 +107,7 @@ fun SettingsContent(
             title = "Orders & Transactions",
             subtitle = "View your order history and transactions",
             icon = Icons.Outlined.ShoppingCart,
-            onClick = { /* Navigate to Orders/Transactions */ }
+            onClick = { navController.navigate(SettingsScreen.Orders.route) }
         )
 
         HorizontalDivider()
@@ -142,7 +147,11 @@ fun SettingsContent(
             title = "Terms and Conditions",
             subtitle = "Read terms and conditions",
             icon = Icons.AutoMirrored.Outlined.Article,
-            onClick = { /* Open Terms and Conditions */ }
+            onClick = {
+                dialogTitle = "Terms and Conditions"
+//                dialogContent = "Your terms and conditions text here..."
+                showDialog = true
+            }
         )
 
         // Privacy Policy
@@ -150,7 +159,11 @@ fun SettingsContent(
             title = "Privacy Policy",
             subtitle = "View the privacy policy",
             icon = Icons.Outlined.PrivacyTip,
-            onClick = { /* Open Privacy Policy */ }
+            onClick = {
+                dialogTitle = "Privacy Policy"
+//                dialogContent = "Your privacy policy text here..."
+                showDialog = true
+            }
         )
 
 
@@ -159,7 +172,10 @@ fun SettingsContent(
             title = "Help & Support",
             subtitle = "Get help and find FAQs",
             icon = Icons.AutoMirrored.Outlined.HelpOutline,
-            onClick = { /* Open Help/Support */ }
+            onClick = {
+                dialogTitle = "Help & Support"
+                showDialog = true
+            }
         )
 
         // About the App
@@ -167,7 +183,9 @@ fun SettingsContent(
             title = "About",
             subtitle = "Learn more about the app",
             icon = Icons.Outlined.Info,
-            onClick = { /* Open About section */ }
+            onClick = {
+                navController.navigate(SettingsScreen.About.route)
+            }
         )
 
         HorizontalDivider()
@@ -177,7 +195,10 @@ fun SettingsContent(
             title = "Check For Update",
             subtitle = "Check for the latest features, improvements, and bug fixes",
             icon = Icons.Outlined.Update,
-            onClick = { /* Open About section */ }
+            onClick = {
+                dialogTitle = "Check For Update"
+                showDialog = true
+            }
         )
 
         // Logout
@@ -188,52 +209,96 @@ fun SettingsContent(
             tint = MaterialTheme.colorScheme.error,
             textColor = MaterialTheme.colorScheme.error,
             onClick = {
-                // Launch the logout task in a coroutine
-                coroutineScope.launch {
-                    /* Handle Logout */
-                    try {
-                        val sharedPreferences =
-                            context.getSharedPreferences(
-                                MainActivity.SHARED_PREFS,
-                                Context.MODE_PRIVATE
-                            )
-                        with(sharedPreferences.edit()) {
-                            putString("username", null)
-                            putString("password", null)
-                            putBoolean("remember_me", false)
-                            apply()
-                        }
+                showLogoutDialog = true
+            }
+        )
 
-                        // Optionally, you can make a server request to log out here
-                        // Example: api.logout()
+        if (showDialog) {
+            FullScreenDialog(
+                title = dialogTitle,
+                content = dialogContent,
+                onDismiss = { showDialog = false }
+            )
+        }
 
-                        // Update state to trigger recomposition after the task
-                        // isLoggedOut = true
+        if (showLogoutDialog) {
+            AlertDialog(
+                onDismissRequest = { showLogoutDialog = false },
+                icon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.Logout,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                },
+                title = { Text("Leaving so soon?") },
+                text = { Text("You'll be signed out of your account. Don’t worry, you can always come back and pick up right where you left off.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showLogoutDialog = false
+                        coroutineScope.launch {
+                            try {
+                                val sharedPreferences =
+                                    context.getSharedPreferences(
+                                        MainActivity.SHARED_PREFS,
+                                        Context.MODE_PRIVATE
+                                    )
+                                with(sharedPreferences.edit()) {
+                                    putString("username", null)
+                                    putString("password", null)
+                                    putBoolean("remember_me", false)
+                                    apply()
+                                }
 
-                        //todo: do server logout request
-                        CookieManager.clear()
+                                // todo: call server logout
+                                CookieManager.clear()
 
+                                // Clear Razorpay Checkout data
+                                Checkout.clearUserData(context)
 
-                        // Erase data of customer from razorpay sdk on logout
-                        Checkout.clearUserData(context)
-
-                        rootNavController.navigate(Graph.ROOT) {
-                            popUpTo(Graph.MAIN_SCREEN_PAGE) {
-                                inclusive = true
+                                // Navigate to the root screen
+                                rootNavController.navigate(Graph.ROOT) {
+                                    popUpTo(Graph.MAIN_SCREEN_PAGE) {
+                                        inclusive = true
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                Log.d("TAG", "SettingsContent: $e")
+                                Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
+                            }finally {
+                                isLoading = false
                             }
                         }
-
-//                        rootNavController.popBackStack(
-//                            rootNavController.graph.startDestinationId,
-//                            false
-//                        )
-
-                    } catch (e: Exception) {
-                        Log.d("TAG", "SettingsContent: $e")
-                        Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    }) {
+                        Text("Log Out", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showLogoutDialog = false }) {
+                        Text("Stay Logged In", color = MaterialTheme.colorScheme.primary)
                     }
                 }
+            )
+        }
+        if (isLoading) {
+            Dialog(onDismissRequest = {}) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
+        }
+    }
+
+    if (showDialog) {
+        FullScreenDialog(
+            title = dialogTitle,
+            content = dialogContent,
+            onDismiss = { showDialog = false }
         )
     }
 }
@@ -257,7 +322,7 @@ fun SettingsItem(
         headlineContent = { Text(title, color = textColor ?: LocalContentColor.current) },
         supportingContent = {
             if (subtitle != null) {
-                Text(subtitle, color = textColor ?: LocalContentColor.current)
+                Text(subtitle)
             }
         },
         leadingContent = {

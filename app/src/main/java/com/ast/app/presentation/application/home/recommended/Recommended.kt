@@ -38,7 +38,6 @@ fun Recommended(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier
-            .background(Color(0xFFF9F9F9))
             .padding(bottom = 16.dp)
     ) {
         Row(

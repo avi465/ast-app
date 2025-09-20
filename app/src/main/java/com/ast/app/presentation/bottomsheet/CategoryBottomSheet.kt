@@ -109,5 +109,5 @@ data class Course(
 )
 
 val availableCourses = listOf(
-    Course("IIT JEE", "Prepare for jee entrance exams", R.drawable.magnet_solid),
+    Course("BANK/SSC", "Custom goal plan by AST", R.drawable.magnet_solid),
 )

@@ -15,3 +15,14 @@ data class PaymentVerifyResponse(
     val success: Boolean,
     val message: String
 )
+
+@Serializable
+data class PaymentModel(
+    @SerialName("_id") val id: String,
+    @SerialName("razorpayPaymentId") val razorpayPaymentId: String,
+    @SerialName("razorpayOrderId") val razorpayOrderId: String,
+    @SerialName("order") val order: OrderModel,
+    @SerialName("user") val user: String,
+    @SerialName("createdAt") val createdAt: String,
+    @SerialName("updatedAt") val updatedAt: String
+)

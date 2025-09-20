@@ -87,7 +87,6 @@ fun PasswordResetScreen(
                     onClick = onPasswordResetSendButtonClicked,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.button_height))
                 ) {
                     Text(text = "Send", style = MaterialTheme.typography.titleMedium)
                 }

@@ -24,11 +24,13 @@ import com.ast.app.R
 import com.ast.app.graphs.CartScreen
 import com.ast.app.graphs.CourseDetailsScreen
 import com.ast.app.graphs.MyCourseDetailsScreen
+import com.ast.app.graphs.SettingsScreen
 import com.ast.app.navigation.appbar.CourseDetailsTopAppbar
 import com.ast.app.navigation.appbar.HomeTopAppbar
 import com.ast.app.navigation.appbar.LiveClassTopAppbar
 import com.ast.app.navigation.appbar.MyCourseDetailsTopAppbar
 import com.ast.app.navigation.appbar.MyCourseTopAppbar
+import com.ast.app.navigation.appbar.SettingItemTopAppbar
 import com.ast.app.navigation.appbar.StoreTopAppbar
 
 @Composable
@@ -147,6 +149,26 @@ fun AstAppTopAppBar(
             actions = {
             }
         )
+    }
+
+    // if screen is about screen
+    val isAboutScreen = currentDestination?.route
+        ?.startsWith(SettingsScreen.About.route) == true
+    val isAccountScreen = currentDestination?.route
+        ?.startsWith(SettingsScreen.Account.route) == true
+    val isOrderScreen = currentDestination?.route
+        ?.startsWith(SettingsScreen.Orders.route) == true
+
+    if (isAccountScreen) {
+        SettingItemTopAppbar(navigateUp = navigateUp, title = "Profile")
+    }
+
+    if (isOrderScreen) {
+        SettingItemTopAppbar(navigateUp = navigateUp, title = "Orders")
+    }
+
+    if (isAboutScreen) {
+        SettingItemTopAppbar(navigateUp = navigateUp, title = "About")
     }
 
     // if screen is cart screen
